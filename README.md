@@ -8,7 +8,7 @@ A calm, modern AI tarot reader. Ask a question, choose a spread, and the cards a
 
 | | |
 |---|---|
-| Live site | _not published yet_ |
+| Live site | https://arcana-ai.space (GitHub Pages: https://lallinanoi99-dev.github.io/Arcana-AI/) |
 | AI Worker | _not deployed yet_ |
 | Contract (BOT Chain mainnet, chain ID 677) | [`0x8dF451bcdB17B909b707aa1fbCc8f8900fAeE1c7`](https://scan.botchain.ai/address/0x8dF451bcdB17B909b707aa1fbCc8f8900fAeE1c7) (deployed from Remix, solc 0.8.34) |
 | Contract (testnet, chain ID 968) | _not deployed yet_ |
