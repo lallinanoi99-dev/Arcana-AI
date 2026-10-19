@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400" role="img" aria-label="Knight of Wands">
+<rect x="1" y="1" width="238" height="398" rx="18" fill="#FFFFFF" stroke="#ECECEA" stroke-width="2"/>
+<rect x="16" y="16" width="208" height="368" rx="10" fill="none" stroke="#111111" stroke-width="1.2"/>
+<rect x="30" y="64" width="180" height="264" rx="90" fill="#FBEDE6"/>
+<g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" fill="#111111">
+<text x="30" y="46" font-size="18" font-weight="500">Kn</text>
+<text x="210" y="46" font-size="10" text-anchor="end" fill="#8C8C88" letter-spacing=".6">Wands · fire</text>
+<text x="120" y="360" font-size="15" font-weight="500" text-anchor="middle">Knight of Wands</text>
+</g>
+<g fill="none"><path d="M94 170 V146 A26 26 0 0 1 146 146 V170 Z" fill="#D9F23F" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M102 152 H138 M120 120 V108 Q130 104 136 110" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(120 236) scale(2)"><path d="M0 -22 V22" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M0 -14 q8 -6 8 -14 q-8 2 -8 14 z M0 -4 q-8 -6 -8 -14 q8 2 8 14 z" fill="#fff" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+</svg>

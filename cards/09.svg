@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400" role="img" aria-label="The Hermit">
+<rect x="1" y="1" width="238" height="398" rx="18" fill="#FFFFFF" stroke="#ECECEA" stroke-width="2"/>
+<rect x="16" y="16" width="208" height="368" rx="10" fill="none" stroke="#111111" stroke-width="1.2"/>
+<rect x="30" y="64" width="180" height="264" rx="90" fill="#F4F8DC"/>
+<g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" fill="#111111">
+<text x="30" y="46" font-size="18" font-weight="500">IX</text>
+<text x="210" y="46" font-size="10" text-anchor="end" fill="#8C8C88" letter-spacing=".6">Major Arcana</text>
+<text x="120" y="360" font-size="15" font-weight="500" text-anchor="middle">The Hermit</text>
+</g>
+<g fill="none"><path d="M120 120 V136 M104 136 H136 L132 196 H108 Z" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="120.0,153.0 123.3,160.4 131.3,159.5 126.5,166.0 131.3,172.5 123.3,171.6 120.0,179.0 116.8,171.6 108.7,172.5 113.5,166.0 108.7,159.5 116.8,160.4" fill="#D9F23F" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M104 196 Q120 206 136 196 M160 120 V290 M150 290 H170" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400" role="img" aria-label="The Star">
+<rect x="1" y="1" width="238" height="398" rx="18" fill="#FFFFFF" stroke="#ECECEA" stroke-width="2"/>
+<rect x="16" y="16" width="208" height="368" rx="10" fill="none" stroke="#111111" stroke-width="1.2"/>
+<rect x="30" y="64" width="180" height="264" rx="90" fill="#F4F8DC"/>
+<g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" fill="#111111">
+<text x="30" y="46" font-size="18" font-weight="500">XVII</text>
+<text x="210" y="46" font-size="10" text-anchor="end" fill="#8C8C88" letter-spacing=".6">Major Arcana</text>
+<text x="120" y="360" font-size="15" font-weight="500" text-anchor="middle">The Star</text>
+</g>
+<g fill="none"><polygon points="120.0,130.0 127.4,158.2 152.5,143.5 137.8,168.6 166.0,176.0 137.8,183.4 152.5,208.5 127.4,193.8 120.0,222.0 112.6,193.8 87.5,208.5 102.2,183.4 74.0,176.0 102.2,168.6 87.5,143.5 112.6,158.2" fill="#D9F23F" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="64" cy="128" r="3.5" fill="#111111"/><circle cx="176" cy="128" r="3.5" fill="#111111"/><circle cx="60" cy="200" r="3.5" fill="#111111"/><circle cx="180" cy="204" r="3.5" fill="#111111"/><circle cx="84" cy="244" r="3.5" fill="#111111"/><circle cx="156" cy="246" r="3.5" fill="#111111"/><circle cx="120" cy="112" r="3.5" fill="#111111"/><path d="M56 272 Q72 262 88 272 T120 272 T152 272 T184 272 M64 290 Q80 280 96 290 T128 290 T160 290" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

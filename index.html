@@ -1,0 +1,1482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ArcanAI · a calm, modern tarot reader</title>
+<meta name="description" content="Ask a question. The cards are shuffled and drawn by a BOT Chain contract, and AI reads them like a real tarot reader. For reflection and fun.">
+<meta name="theme-color" content="#F7F7F5">
+<meta property="og:title" content="ArcanAI · Ask. Draw. Reflect.">
+<meta property="og:description" content="A calm, modern AI tarot reader. Cards drawn on BOT Chain, so nobody can fake them.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='2' width='20' height='28' rx='4' fill='%230E0E0E'/%3E%3Cpath d='M16 9l2 5 5 2-5 2-2 5-2-5-5-2 5-2z' fill='%23D9F23F'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F7F5; --tile: #FFFFFF; --border: #ECECEA; --text: #111111; --muted: #8C8C88; --word: #CFCFCB;
+    --lime: #D9F23F; --green: #6CC24A; --black: #0E0E0E;
+    --grad: linear-gradient(135deg, var(--lime), var(--green));
+    --radius: 24px; --gutter: 16px;
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    color-scheme: light;
+  }
+  @media (min-width: 720px) { :root { --gutter: 32px; } }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 15px/1.55 Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: -.005em; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1; background: radial-gradient(60vmax 50vmax at 50% 38%, #FFFFFF 0%, rgba(255,255,255,.6) 40%, rgba(247,247,245,0) 75%); }
+  img { display: block; max-width: 100%; }
+  button, input, textarea { font: inherit; color: inherit; }
+  a { color: inherit; }
+  .wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 var(--gutter); }
+  .muted { color: var(--muted); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+
+  /* ---------- buttons ---------- */
+  .pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--border); background: var(--tile); font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer; white-space: nowrap; transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .2s, opacity .2s; }
+  .pill:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(17,17,17,.07); }
+  .pill:active { transform: translateY(0); }
+  .pill.lime { background: var(--lime); border-color: transparent; }
+  .pill.black { background: var(--black); color: #fff; border-color: transparent; }
+  .pill.big { min-height: 54px; padding: 0 28px; font-size: 15px; }
+  .pill.small { min-height: 36px; padding: 0 14px; font-size: 13px; }
+  .pill:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .badge { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; background: #EFEFEC; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+
+  /* ---------- nav ---------- */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 40; padding: 14px 0; transition: background .3s, backdrop-filter .3s; }
+  .nav.scrolled { background: rgba(247,247,245,.78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 500; font-size: 15px; letter-spacing: -.02em; background: none; border: 0; padding: 0; cursor: pointer; }
+  .logo svg { width: 22px; height: 30px; }
+  .nav-right { display: flex; align-items: center; gap: 8px; }
+  .burger { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); background: var(--tile); display: grid; place-items: center; cursor: pointer; }
+  .burger span { display: block; width: 16px; height: 1.5px; background: var(--text); position: relative; transition: transform .3s var(--ease); }
+  .burger span::before, .burger span::after { content: ''; position: absolute; left: 0; width: 16px; height: 1.5px; background: var(--text); transition: transform .3s var(--ease); }
+  .burger span::before { top: -5px; } .burger span::after { top: 5px; }
+  .menu-open .burger span { background: transparent; }
+  .menu-open .burger span::before { transform: translateY(5px) rotate(45deg); }
+  .menu-open .burger span::after { transform: translateY(-5px) rotate(-45deg); }
+  .menu { position: fixed; top: 70px; right: var(--gutter); z-index: 41; width: min(280px, calc(100vw - 2 * var(--gutter))); background: var(--tile); border: 1px solid var(--border); border-radius: 20px; padding: 8px; box-shadow: 0 20px 50px rgba(17,17,17,.08); opacity: 0; transform: translateY(-8px) scale(.98); pointer-events: none; transition: opacity .25s var(--ease), transform .25s var(--ease); }
+  .menu-open .menu { opacity: 1; transform: none; pointer-events: auto; }
+  .menu button { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 14px 14px; border: 0; background: none; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; text-align: left; }
+  .menu button:hover { background: var(--bg); }
+  .menu button small { color: var(--muted); font-weight: 400; font-size: 12px; }
+  .wallet-slot { display: flex; align-items: center; gap: 6px; }
+  @media (max-width: 520px) { .wallet-slot .badge { display: none; } .logo .word { display: none; } }
+
+  /* ---------- views ---------- */
+  .view { display: none; }
+  .view.active { display: block; animation: viewIn .6s var(--ease) both; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+  .stage { min-height: 100svh; padding: 110px 0 72px; }
+  .eyebrow { font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+  .title { font-size: clamp(32px, 5.4vw, 60px); line-height: 1.04; font-weight: 400; letter-spacing: -.035em; margin: 0 0 12px; }
+  .lede { color: var(--muted); font-size: 16px; max-width: 560px; margin: 0; }
+  .back-link { border: 0; background: none; color: var(--muted); font-size: 14px; cursor: pointer; padding: 0; margin-bottom: 26px; display: inline-flex; gap: 6px; }
+  .back-link:hover { color: var(--text); }
+
+  /* ---------- landing ---------- */
+  .hero { position: relative; min-height: 100svh; min-height: max(100svh, 640px); overflow: hidden; }
+  .collage { position: absolute; inset: 0; pointer-events: none; }
+  .patch { position: absolute; border-radius: 22px; background-size: cover; box-shadow: 0 30px 60px rgba(17,17,17,.06); animation: drift 14s ease-in-out infinite alternate, haze 9s ease-in-out infinite alternate; animation-delay: var(--delay, 0s); opacity: .9; }
+  @keyframes drift { from { transform: translate3d(0, 0, 0) rotate(var(--r, 0deg)); } to { transform: translate3d(var(--dx, 10px), var(--dy, -16px), 0) rotate(calc(var(--r, 0deg) * -1)); } }
+  @keyframes haze { 0%, 100% { filter: blur(var(--b1, 0px)); } 50% { filter: blur(var(--b2, 6px)); } }
+  .hero-center { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 26px; z-index: 2; text-align: center; }
+  .float-card { width: clamp(150px, 19vw, 220px); aspect-ratio: 3 / 5; perspective: 900px; }
+  .float-card .inner { width: 100%; height: 100%; border-radius: 18px; box-shadow: 0 40px 70px rgba(14,14,14,.22), 0 6px 14px rgba(14,14,14,.12); animation: bob 6s ease-in-out infinite; transform-style: preserve-3d; }
+  .float-card img { width: 100%; height: 100%; border-radius: 18px; transform: rotateX(var(--ty, 0deg)) rotateY(var(--tx, 0deg)); transition: transform .5s var(--ease); }
+  @keyframes bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-16px) rotate(2deg); } }
+  .tagline { font-size: 15px; color: var(--muted); margin: 0; letter-spacing: .01em; }
+  .wordmark { position: absolute; left: var(--gutter); bottom: -0.16em; margin: 0; font-weight: 400; font-size: clamp(100px, 21vw, 340px); line-height: 1; letter-spacing: -.06em; color: var(--word); user-select: none; pointer-events: none; white-space: nowrap; }
+  .wordmark span { display: inline-block; opacity: 0; transform: translateY(.25em); filter: blur(14px); }
+  .wordmark.in span { animation: letterIn 1.1s var(--ease) forwards; animation-delay: calc(var(--i) * 90ms + 200ms); }
+  @keyframes letterIn { to { opacity: 1; transform: none; filter: blur(0); } }
+  .hero-corner { position: absolute; right: var(--gutter); bottom: 30px; z-index: 2; max-width: 240px; text-align: right; font-size: 12px; color: var(--muted); }
+  @media (max-width: 720px) { .hero-corner { display: none; } .hero-center { top: 44%; } }
+
+  /* ---------- ask ---------- */
+  .ask-box { margin-top: 44px; max-width: 860px; }
+  .ask-input { width: 100%; border: 0; border-bottom: 1px solid #DADAD6; background: transparent; padding: 10px 0 18px; font-size: clamp(26px, 4.4vw, 46px); font-weight: 300; letter-spacing: -.03em; line-height: 1.15; resize: none; outline: none; min-height: 1.6em; }
+  .ask-input::placeholder { color: var(--word); }
+  .ask-input:focus { border-bottom-color: var(--text); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .chip { border: 1px solid var(--border); background: var(--tile); border-radius: 999px; padding: 9px 15px; font-size: 13px; cursor: pointer; transition: border-color .2s, transform .2s var(--ease); }
+  .chip:hover { border-color: #CFCFCB; transform: translateY(-1px); }
+  .hint { margin-top: 18px; min-height: 22px; font-size: 14px; color: var(--muted); }
+  .hint.warn { color: #B4581E; }
+  .note { margin-top: 14px; display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; background: var(--tile); border: 1px solid var(--border); border-radius: 16px; font-size: 14px; color: #4A4A47; max-width: 640px; }
+  .note b { font-weight: 500; color: var(--text); }
+  .row-end { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 36px; }
+
+  /* ---------- bento ---------- */
+  .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+  .tile { position: relative; background: var(--tile); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; grid-column: span 12; min-width: 0; }
+  .tile h3 { font-size: 13px; font-weight: 500; color: var(--muted); margin: 0 0 14px; letter-spacing: .01em; }
+  @media (min-width: 860px) {
+    .s4 { grid-column: span 4; } .s5 { grid-column: span 5; } .s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; } .s12 { grid-column: span 12; }
+  }
+  @media (min-width: 560px) and (max-width: 859px) { .m6 { grid-column: span 6; } }
+
+  /* ---------- spread picker ---------- */
+  .spreads { margin-top: 40px; }
+  .spread-card { cursor: pointer; text-align: left; font: inherit; display: flex; flex-direction: column; gap: 18px; min-height: 280px; transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .2s; }
+  .spread-card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(17,17,17,.06); }
+  .spread-card[aria-pressed="true"] { border-color: transparent; box-shadow: 0 0 0 2px var(--green), 0 18px 40px rgba(108,194,74,.14); }
+  .spread-card[aria-pressed="true"]::after { content: '✓'; position: absolute; top: 20px; right: 20px; width: 28px; height: 28px; border-radius: 50%; background: var(--grad); display: grid; place-items: center; font-size: 14px; font-weight: 600; }
+  .spread-card:disabled { cursor: not-allowed; opacity: .6; transform: none; box-shadow: none; }
+  .mini-fan { height: 118px; display: flex; align-items: center; justify-content: center; }
+  .mini-fan img { width: 62px; border-radius: 7px; box-shadow: 0 10px 22px rgba(14,14,14,.2); margin: 0 -8px; }
+  .mini-fan img:nth-child(1):not(:only-child) { transform: rotate(-10deg) translateY(6px); }
+  .mini-fan img:nth-child(3) { transform: rotate(10deg) translateY(6px); }
+  .spread-card .name { font-size: 22px; font-weight: 500; letter-spacing: -.02em; }
+  .spread-card .desc { color: var(--muted); font-size: 14px; }
+  .spread-card .status { margin-top: auto; font-size: 13px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .recap { margin-top: 34px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px; justify-content: space-between; }
+  .recap q { font-size: 18px; letter-spacing: -.01em; }
+
+  /* ---------- the table / reading ---------- */
+  .reading-head { margin-bottom: 28px; }
+  .reading-head .title { font-size: clamp(28px, 4.4vw, 50px); max-width: 900px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-size: 13px; }
+  .meta a { color: var(--muted); }
+  .table-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 420px; gap: 28px; overflow: hidden; }
+  .deck { position: relative; width: 150px; height: 250px; }
+  .deck img { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 12px; box-shadow: 0 16px 30px rgba(14,14,14,.18); }
+  .shuffling .deck img { animation: riffle 1.25s var(--ease) infinite; animation-delay: calc(var(--i) * 70ms); }
+  .shuffling .deck img:nth-child(odd) { --dir: -1; }
+  @keyframes riffle {
+    0%, 100% { transform: translate(0, calc(var(--i) * -1.5px)) rotate(0); }
+    35% { transform: translate(calc(var(--dir, 1) * 74px), -10px) rotate(calc(var(--dir, 1) * 10deg)); }
+    65% { transform: translate(calc(var(--dir, 1) * 20px), 4px) rotate(calc(var(--dir, 1) * -3deg)); }
+  }
+  .table-status { text-align: center; }
+  .table-status p { margin: 4px 0; }
+  .table-status .big { font-size: 18px; font-weight: 500; }
+  .spinner-dots::after { content: ''; animation: dots 1.4s steps(4) infinite; }
+  @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+
+  .card-tile { display: flex; flex-direction: column; gap: 18px; animation: deal .8s var(--ease) both; animation-delay: calc(var(--i) * 140ms); }
+  @keyframes deal { from { opacity: 0; transform: translateY(40px) rotate(-3deg) scale(.96); } to { opacity: 1; transform: none; } }
+  .card-tile.daily { flex-direction: column; }
+  @media (min-width: 860px) { .card-tile.daily { flex-direction: row; align-items: flex-start; gap: 32px; } .card-tile.daily .flip { flex: 0 0 220px; } }
+  .pos { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); }
+  .flip { width: min(100%, 220px); margin: 0 auto; aspect-ratio: 3 / 5; perspective: 1100px; cursor: pointer; border: 0; padding: 0; background: none; }
+  .flip:disabled { cursor: default; }
+  .flip .inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 1s var(--ease); }
+  .flip .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 36px rgba(14,14,14,.14); }
+  .flip .face img { width: 100%; height: 100%; }
+  .flip .front { transform: rotateY(180deg); }
+  .flip .front img { transition: transform .9s var(--ease) .55s; }
+  .flipped .flip .inner { transform: rotateY(180deg); }
+  .flipped.rev .flip .front img { transform: rotate(180deg); }
+  .flip-hint { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--lime); opacity: .9; }
+  .card-tile:not(.flipped) .flip:hover .inner { transform: translateY(-4px) rotate(-1deg); }
+  .card-text { opacity: 0; transform: translateY(8px); transition: opacity .6s var(--ease) .5s, transform .6s var(--ease) .5s; flex: 1; }
+  .flipped .card-text { opacity: 1; transform: none; }
+  .card-text .cname { font-size: 20px; font-weight: 500; letter-spacing: -.02em; margin: 0 0 8px; }
+  .orient { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 500; background: #F1F1EE; }
+  .orient.up { background: var(--lime); }
+  .kw { font-size: 13px; color: var(--muted); margin: 10px 0 8px; }
+  .interp { margin: 0; font-size: 15px; }
+
+  .shimmer { display: grid; gap: 9px; }
+  .shimmer i { display: block; height: 11px; border-radius: 6px; background: linear-gradient(90deg, #F0F0ED 0%, #F8F8F6 40%, #F0F0ED 80%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+  .shimmer i:nth-child(2) { width: 92%; } .shimmer i:nth-child(3) { width: 64%; }
+  @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+  .extras { display: contents; }
+  .extras > .tile { opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease), transform .7s var(--ease); pointer-events: none; }
+  .revealed .extras > .tile { opacity: 1; transform: none; pointer-events: auto; }
+  .revealed .extras > .tile:nth-child(2) { transition-delay: .08s; } .revealed .extras > .tile:nth-child(3) { transition-delay: .16s; } .revealed .extras > .tile:nth-child(4) { transition-delay: .24s; } .revealed .extras > .tile:nth-child(5) { transition-delay: .32s; }
+
+  .ring-wrap { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .ring { position: relative; width: 150px; height: 150px; flex: none; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .track { stroke: #F0F0ED; }
+  .ring .bar { transition: stroke-dashoffset 1.6s var(--ease) .3s; }
+  .ring .center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+  .ring .pct { font-size: 34px; font-weight: 500; letter-spacing: -.04em; line-height: 1; }
+  .ring .el { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .ring-note { flex: 1; min-width: 140px; font-size: 14px; color: var(--muted); }
+  .ring-note b { display: block; color: var(--text); font-weight: 500; font-size: 15px; margin-bottom: 4px; }
+  .el-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .el-list span { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: #F3F3F0; color: #555; }
+
+  .split .num { font-size: 52px; font-weight: 400; letter-spacing: -.05em; line-height: 1; }
+  .split .num small { font-size: 18px; color: var(--muted); letter-spacing: 0; }
+  .bars { display: flex; gap: 4px; height: 10px; margin: 18px 0 12px; }
+  .bars span { border-radius: 6px; background: #EFEFEC; flex: 1; }
+  .bars span.major { background: var(--black); }
+  .bars span.minor { background: var(--grad); }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+
+  .story p { font-size: clamp(18px, 2vw, 22px); line-height: 1.45; letter-spacing: -.015em; margin: 0; font-weight: 400; }
+  .reflection { background: var(--black); color: #fff; border-color: var(--black); }
+  .reflection h3 { color: #8C8C88; }
+  .reflection p { font-size: clamp(20px, 2.2vw, 26px); line-height: 1.35; letter-spacing: -.02em; margin: 0; }
+  .reflection .sigil { position: absolute; right: 22px; bottom: 20px; width: 34px; opacity: .9; }
+  .source { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 16px; }
+  .source::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--grad); }
+  .care { font-size: 14px; color: #4A4A47; }
+  .share-tile { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+  .share-tile .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .check { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--green); }
+  .msg-tile { text-align: center; padding: 64px 24px; }
+  .msg-tile .title { font-size: clamp(28px, 4vw, 44px); }
+  .msg-tile .row-end { justify-content: center; }
+
+  /* ---------- history ---------- */
+  .hist-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  @media (max-width: 520px) { .hist-row { gap: 12px; padding: 12px; } .thumbs img { width: 26px; } }
+  .hist-row { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--border); background: var(--tile); cursor: pointer; text-align: left; font: inherit; width: 100%; transition: transform .2s var(--ease), box-shadow .2s; }
+  .hist-row:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(17,17,17,.05); }
+  .thumbs { display: flex; gap: 4px; flex: none; }
+  .thumbs img { width: 34px; border-radius: 4px; border: 1px solid var(--border); }
+  .thumbs img.rev { transform: rotate(180deg); }
+  .hist-row .what { flex: 1; min-width: 0; }
+  .hist-row .what b { font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hist-row .what span { color: var(--muted); font-size: 13px; }
+  .hist-row .id { color: var(--muted); font-size: 13px; }
+  .streak-num { font-size: 64px; letter-spacing: -.05em; line-height: 1; }
+
+  /* ---------- home sections ---------- */
+  .home-sec { padding: 96px 0 24px; }
+  .sec-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 40px; margin-bottom: 36px; }
+  .sec-head .title { margin: 0; }
+  .sec-head .lede { max-width: 420px; }
+  .reveal { opacity: 0; transform: translateY(28px); filter: blur(6px); transition: opacity .9s var(--ease), transform .9s var(--ease), filter .9s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; filter: none; }
+  .bento > .reveal:nth-child(2) { transition-delay: .08s; } .bento > .reveal:nth-child(3) { transition-delay: .16s; } .bento > .reveal:nth-child(4) { transition-delay: .24s; }
+  @media (min-width: 860px) { .s3 { grid-column: span 3; } }
+  @media (min-width: 560px) and (max-width: 859px) { .s3 { grid-column: span 6; } }
+  .step { display: flex; flex-direction: column; gap: 6px; padding: 14px 14px 24px; }
+  .step .step-n, .step .step-t, .step .cap { padding: 0 10px; }
+  .visual { height: 230px; border-radius: 16px; background: var(--bg); margin-bottom: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .step-n { margin: 0; font-size: 12px; color: var(--muted); font-weight: 500; }
+  .tile .step-t { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: -.02em; color: var(--text); }
+  .fake-input { width: 82%; background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; font-size: 14px; box-shadow: 0 10px 24px rgba(17,17,17,.05); }
+  .caret { display: inline-block; width: 1.5px; height: 15px; background: var(--text); margin-left: 2px; vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .fake-chips { display: flex; gap: 6px; width: 82%; overflow: hidden; }
+  .fake-chips span { white-space: nowrap; font-size: 11px; padding: 6px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--border); color: var(--muted); }
+  .fan { display: flex; }
+  .fan img { width: 74px; border-radius: 8px; box-shadow: 0 14px 26px rgba(14,14,14,.22); margin: 0 -10px; transition: transform .6s var(--ease); }
+  .fan img:nth-child(1) { transform: rotate(-12deg) translateY(8px); } .fan img:nth-child(3) { transform: rotate(12deg) translateY(8px); }
+  .step:hover .fan img:nth-child(1) { transform: rotate(-18deg) translate(-10px, 10px); } .step:hover .fan img:nth-child(3) { transform: rotate(18deg) translate(10px, 10px); } .step:hover .fan img:nth-child(2) { transform: translateY(-8px); }
+  .tx-pill { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; }
+  .tx-pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(108,194,74,.18); }
+  .v-reflect .ring { width: 120px; height: 120px; }
+  .v-reflect .pct { font-size: 26px; }
+  .mini-q { margin: 0; font-size: 13px; color: #4A4A47; }
+  .marquee-tile { padding: 22px 0; overflow: hidden; display: flex; flex-direction: column; gap: 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .marquee { display: flex; gap: 12px; width: max-content; animation: slide 60s linear infinite; }
+  .marquee.rev { animation-direction: reverse; animation-duration: 70s; }
+  .marquee-tile:hover .marquee { animation-play-state: paused; }
+  .marquee img { width: 108px; border-radius: 9px; box-shadow: 0 8px 18px rgba(14,14,14,.08); }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  .stat-tile { display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+  .stat-tile h3 { margin: 0; }
+  .stat-tile .num { font-size: 46px; letter-spacing: -.05em; line-height: 1; }
+  .stat-tile .num small { font-size: 16px; color: var(--muted); letter-spacing: 0; }
+  .stat-tile .bars { margin: 0; }
+  .extras-static { display: contents; }
+  .suit-tile { display: flex; align-items: center; gap: 16px; padding: 18px; overflow: hidden; }
+  .suit-tile img { width: 64px; border-radius: 7px; flex: none; transition: transform .5s var(--ease); }
+  .suit-tile:hover img { transform: rotate(-6deg) scale(1.05); }
+  .suit-tile b { display: block; font-weight: 500; font-size: 16px; }
+  .suit-tile span { font-size: 13px; color: var(--muted); }
+  .code-tile { background: var(--black); color: #E8E8E4; border-color: var(--black); display: flex; flex-direction: column; justify-content: space-between; gap: 14px; }
+  .code-tile h3 { color: #8C8C88; margin: 0; }
+  .code-tile pre { margin: 0; overflow-x: auto; font: 13px/1.7 ui-monospace, 'SF Mono', Menlo, monospace; }
+  .code-tile .k { color: var(--lime); } .code-tile .f { color: #9BE07A; } .code-tile .c { color: #6E6E6A; }
+  .hash-tile { display: flex; flex-direction: column; gap: 6px; }
+  .hash-q { margin: 0; font-size: 20px; letter-spacing: -.02em; }
+  .hash-arrow { margin: 0; font-size: 12px; color: var(--muted); }
+  .hash-h { margin: 0 0 8px; font: 500 18px ui-monospace, 'SF Mono', Menlo, monospace; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; word-break: break-all; }
+  .ethics-tile ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; font-size: 14px; color: #4A4A47; }
+  .latest-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .latest-head h3 { margin: 0; }
+  .home-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; margin-top: 64px; padding: 36px; border-radius: var(--radius); background: radial-gradient(80% 140% at 0% 0%, #F3FBC9 0%, #FFFFFF 60%); border: 1px solid var(--border); }
+  .home-cta .title { margin: 0; font-size: clamp(28px, 4vw, 44px); }
+  @media (max-width: 720px) { .home-sec { padding-top: 72px; } .home-cta { padding: 24px; } }
+
+  /* ---------- footer ---------- */
+  footer { position: relative; overflow: hidden; padding: 40px 0 0; }
+  .foot-row { position: relative; z-index: 1; }
+  .foot-tile { min-height: 230px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; text-decoration: none; transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
+  a.foot-tile:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(17,17,17,.07); }
+  .built { align-items: center; text-align: center; justify-content: center; background: radial-gradient(70% 70% at 50% 45%, #FBFDEB 0%, #FFFFFF 70%); }
+  .built img { width: 84px; height: 84px; border-radius: 20px; }
+  .cap { font-size: 13px; color: var(--muted); margin: 0; }
+  .foot-ring { display: flex; align-items: center; gap: 18px; }
+  .foot-ring .ring { width: 104px; height: 104px; }
+  .foot-ring .pct { font-size: 24px; }
+  .addr { font-size: 22px; font-weight: 500; letter-spacing: -.02em; word-break: break-all; }
+  .foot-word { position: relative; margin: 30px 0 0; padding: 0 var(--gutter); font-size: clamp(84px, 24vw, 380px); line-height: .8; letter-spacing: -.065em; color: var(--word); white-space: nowrap; user-select: none; }
+  .foot-word span { display: inline-block; opacity: 0; transform: translateY(.3em); filter: blur(16px); }
+  .foot-word.in span { animation: letterIn 1.2s var(--ease) forwards; animation-delay: calc(var(--i) * 110ms); }
+  .fine { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding: 18px var(--gutter) 26px; font-size: 12px; color: var(--muted); max-width: 1200px; margin: 0 auto; }
+
+  /* ---------- modal + toast ---------- */
+  .modal { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(247,247,245,.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: fade .25s ease both; }
+  .modal-card { position: relative; background: var(--tile); border: 1px solid var(--border); border-radius: 28px; width: min(640px, 100%); max-height: calc(100svh - 32px); overflow: auto; padding: 32px; box-shadow: 0 30px 80px rgba(17,17,17,.12); animation: viewIn .4s var(--ease) both; }
+  .modal-card h2 { font-size: 30px; font-weight: 400; letter-spacing: -.03em; margin: 0 0 10px; }
+  .modal-card h4 { margin: 22px 0 6px; font-size: 14px; font-weight: 500; }
+  .modal-card p, .modal-card li { color: #4A4A47; font-size: 14px; }
+  .modal-card ul { padding-left: 18px; margin: 6px 0; }
+  .modal-close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: var(--tile); cursor: pointer; font-size: 18px; line-height: 1; }
+  .suits { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+  .suits div { background: var(--bg); border-radius: 14px; padding: 12px; font-size: 13px; color: #4A4A47; }
+  .suits b { display: block; color: var(--text); font-weight: 500; }
+  @keyframes fade { from { opacity: 0; } }
+  .toast { position: fixed; left: 50%; bottom: 24px; z-index: 70; transform: translateX(-50%); background: var(--black); color: #fff; padding: 12px 18px; border-radius: 999px; font-size: 14px; max-width: calc(100vw - 32px); box-shadow: 0 16px 40px rgba(14,14,14,.25); animation: viewIn .3s var(--ease) both; }
+  .toast a { color: var(--lime); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    .wordmark span, .foot-word span, .reveal { opacity: 1; transform: none; filter: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <button class="logo" type="button" data-go="landing" aria-label="ArcanAI home">
+      <svg viewBox="0 0 22 30" aria-hidden="true"><rect x="1" y="1" width="20" height="28" rx="4" fill="#0E0E0E"/><path d="M11 8.5l1.6 4.4 4.4 1.6-4.4 1.6L11 20.5l-1.6-4.4L5 14.5l4.4-1.6z" fill="#D9F23F"/></svg>
+      <span class="word">arcanai</span>
+    </button>
+    <div class="nav-right">
+      <div class="wallet-slot" id="wallet-slot"></div>
+      <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span></button>
+    </div>
+  </div>
+</header>
+<nav class="menu" id="menu" aria-label="Main">
+  <button type="button" data-go="ask">Read <small>Ask a question</small></button>
+  <button type="button" data-go="history">My readings <small>Your draws &amp; streak</small></button>
+  <button type="button" data-about>About tarot <small>The basics</small></button>
+</nav>
+
+<main id="main">
+  <!-- Step 1 · Landing -->
+  <div class="view" data-view="landing">
+  <section class="hero" aria-label="Welcome">
+    <div class="collage" id="collage" aria-hidden="true"></div>
+    <div class="hero-center">
+      <div class="float-card" id="float-card"><div class="inner"><img src="cards/back.svg" alt="" width="240" height="400"></div></div>
+      <p class="tagline">Ask. Draw. Reflect.</p>
+      <button class="pill lime big" type="button" data-go="ask">Begin a reading</button>
+    </div>
+    <p class="hero-corner">A calm, modern tarot. The cards are shuffled and drawn by a contract on BOT Chain, so nobody can fake them.</p>
+    <h1 class="wordmark" id="wordmark" aria-label="arcanai"></h1>
+  </section>
+
+  <!-- Home · how it works -->
+  <section class="home-sec" id="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><p class="eyebrow">How it works</p><h2 class="title" id="how-title">Three quiet steps.</h2></div>
+        <p class="lede">No accounts, no spooky stuff. A question, a fair shuffle, and a reading you can come back to.</p>
+      </div>
+      <div class="bento">
+        <article class="tile s4 step reveal">
+          <div class="visual v-ask" aria-hidden="true">
+            <div class="fake-input">What should I focus on this week?<i class="caret"></i></div>
+            <div class="fake-chips"><span>How can I grow at work?</span><span>What do I need to know…</span></div>
+          </div>
+          <p class="step-n">01</p><h3 class="step-t">Ask</h3>
+          <p class="cap">Write one open question. Only a salted hash of it ever goes on-chain.</p>
+        </article>
+        <article class="tile s4 step reveal">
+          <div class="visual v-draw" aria-hidden="true">
+            <div class="fan"><img src="cards/back.svg" alt=""><img src="cards/back.svg" alt=""><img src="cards/back.svg" alt=""></div>
+            <span class="tx-pill"><i></i>Drawn on BOT Chain</span>
+          </div>
+          <p class="step-n">02</p><h3 class="step-t">Draw on BOT Chain</h3>
+          <p class="cap">A contract shuffles 78 cards and draws yours, upright or reversed. Nobody can pick them.</p>
+        </article>
+        <article class="tile s4 step reveal">
+          <div class="visual v-reflect" aria-hidden="true">
+            <div class="ring" id="how-ring"><div class="center"><div class="pct">68%</div><div class="el">Water</div></div></div>
+            <p class="mini-q">“What is your heart trying to tell you?”</p>
+          </div>
+          <p class="step-n">03</p><h3 class="step-t">Reflect</h3>
+          <p class="cap">AI reads the cards like a real reader, then leaves you one question to journal on.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Home · the deck -->
+  <section class="home-sec" id="deck" aria-labelledby="deck-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><p class="eyebrow">The deck</p><h2 class="title" id="deck-title">78 cards. One story.</h2></div>
+        <p class="lede">Our own minimal line-art deck: 22 Major Arcana for the big themes, 56 Minor Arcana for everyday life.</p>
+      </div>
+      <div class="bento">
+        <div class="tile s8 marquee-tile reveal" aria-label="Cards from the deck">
+          <div class="marquee" id="marquee-a"></div>
+          <div class="marquee rev" id="marquee-b"></div>
+        </div>
+        <div class="tile s4 stat-tile reveal">
+          <h3>Major vs Minor</h3>
+          <div><div class="num">22<small> Major</small></div><p class="cap">From 0 The Fool to 21 The World: life’s big chapters.</p></div>
+          <div class="bars"><span class="major" style="flex:22"></span><span class="minor" style="flex:56"></span></div>
+          <div><div class="num">56<small> Minor</small></div><p class="cap">Four suits, Ace to King: the day-to-day.</p></div>
+        </div>
+        <div id="suit-tiles" class="extras-static"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Home · fair by design -->
+  <section class="home-sec" id="fair" aria-labelledby="fair-title">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><p class="eyebrow">Fair by design</p><h2 class="title" id="fair-title">Nobody can fake the cards.</h2></div>
+        <p class="lede">Not us, not you, not the AI. The shuffle happens in public, and the reading is grounded in the cards that came out.</p>
+      </div>
+      <div class="bento">
+        <div class="tile s7 code-tile reveal">
+          <h3>Shuffled by the contract</h3>
+<pre aria-label="Contract excerpt"><code><span class="k">function</span> <span class="f">draw</span>(Spread spread, bytes32 questionHash) {
+  seed = keccak256(prevrandao, blockhash, sender, nonce++);
+  <span class="c">// distinct cards from 0–77, upright or reversed</span>
+  <span class="k">emit</span> <span class="f">Drawn</span>(id, seeker, spread, cards, reversed);
+}</code></pre>
+          <p class="cap">Every draw is a public transaction you can check on the explorer.</p>
+        </div>
+        <div class="tile s5 hash-tile reveal">
+          <h3>Your question stays yours</h3>
+          <p class="hash-q">“How can I grow at work?”</p>
+          <p class="hash-arrow" aria-hidden="true">↓ salted keccak256</p>
+          <p class="hash-h" id="hash-demo">0x7f3a…c91e</p>
+          <p class="cap">Only the hash is stored. Share the question only if you choose to.</p>
+        </div>
+        <div class="tile s5 ethics-tile reveal">
+          <h3>For reflection, not prediction</h3>
+          <ul>
+            <li>Reversed means blocked or inward, not “bad”.</li>
+            <li>No predictions about health, death, pregnancy, legal or money outcomes.</li>
+            <li>No telling you what you must do.</li>
+          </ul>
+        </div>
+        <div class="tile s7 latest-tile reveal">
+          <div class="latest-head"><h3>Latest draws</h3><span class="badge" id="latest-badge">Live</span></div>
+          <div class="hist-list" id="latest"></div>
+        </div>
+      </div>
+      <div class="home-cta reveal">
+        <p class="title">Ready when you are.</p>
+        <button class="pill lime big" type="button" data-go="ask">Begin a reading</button>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- Step 2 · Ask -->
+  <section class="view stage" data-view="ask" aria-labelledby="ask-title">
+    <div class="wrap">
+      <button class="back-link" type="button" data-go="landing">← Back</button>
+      <p class="eyebrow">Step 1 of 3 · Ask</p>
+      <h2 class="title" id="ask-title">Focus on one question.</h2>
+      <p class="lede">Open questions work best: “What should I focus on…”, “How can I…”. Your question stays private: only a hash of it goes on-chain.</p>
+      <div class="ask-box">
+        <label class="sr" for="question">Your question</label>
+        <textarea class="ask-input" id="question" rows="1" maxlength="200" placeholder="What’s on your mind?" autocomplete="off"></textarea>
+        <div class="chips" id="chips"></div>
+        <div class="hint" id="ask-hint" aria-live="polite"></div>
+        <div id="ask-note"></div>
+      </div>
+      <div class="row-end">
+        <button class="pill black big" type="button" id="ask-next">Choose a spread →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 3 · Spread -->
+  <section class="view stage" data-view="spread" aria-labelledby="spread-title">
+    <div class="wrap">
+      <button class="back-link" type="button" data-go="ask">← Edit question</button>
+      <p class="eyebrow">Step 2 of 3 · Spread</p>
+      <h2 class="title" id="spread-title">Choose a spread.</h2>
+      <p class="lede">Positions give the cards context: the same card means different things as your past or your future.</p>
+      <div class="bento spreads" id="spreads"></div>
+      <div class="recap">
+        <q id="recap-q"></q>
+        <button class="pill black big" type="button" id="draw-btn">Shuffle &amp; draw on BOT Chain</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Steps 4–5 · The table and the reading -->
+  <section class="view stage" data-view="reading" aria-label="Your reading">
+    <div class="wrap" id="reading-root"></div>
+  </section>
+
+  <!-- Step 6 · My readings -->
+  <section class="view stage" data-view="history" aria-labelledby="hist-title">
+    <div class="wrap">
+      <p class="eyebrow">History</p>
+      <h2 class="title" id="hist-title">My readings.</h2>
+      <p class="lede">Every draw lives on BOT Chain under your wallet. One Daily Pull a day builds your streak.</p>
+      <div class="bento" id="history-root" style="margin-top:36px"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="footer"></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js" crossorigin="anonymous"></script>
+<script>
+(() => {
+  'use strict';
+
+  // ============================================================
+  // Config — the only values to edit after deploying.
+  // ============================================================
+  const CONFIG = {
+    networks: {
+      // `contract` on mainnet is the single source for the app, the footer address and the explorer link.
+      mainnet: { chainId: 677, name: 'BOT Chain', rpc: 'https://rpc.botchain.ai', explorer: 'https://scan.botchain.ai', contract: '0x8dF451bcdB17B909b707aa1fbCc8f8900fAeE1c7' },
+      testnet: { chainId: 968, name: 'BOT Chain Testnet', rpc: 'https://rpc.bohr.life', explorer: 'https://scan.bohr.life', contract: '' },
+    },
+    // AI Worker (worker/), e.g. 'https://arcanai-ai.<account>.workers.dev/tarot'. Empty → classic meanings only.
+    aiUrl: '',
+    aiTimeoutMs: 8000,
+  };
+
+  const SPREADS = {
+    daily: { index: 0, label: 'Daily Pull', positions: ['Today'] },
+    three: { index: 1, label: 'Past · Present · Future', positions: ['Past', 'Present', 'Future'] },
+  };
+  const spreadKey = (n) => (Number(n) === 0 ? 'daily' : 'three');
+
+  const READING_TUPLE = 'tuple(address seeker, uint8 spread, uint8[3] cards, bool[3] reversed, uint8 count, bytes32 questionHash, uint64 at)';
+  const ABI = [
+    'function draw(uint8 spread, bytes32 questionHash) returns (uint256 id)',
+    `function getReading(uint256 id) view returns (${READING_TUPLE})`,
+    'function readingsOf(address seeker) view returns (uint256[])',
+    'function streakOf(address seeker) view returns (uint32)',
+    'function lastDailyDay(address seeker) view returns (uint32)',
+    'function total() view returns (uint256)',
+    'event Drawn(uint256 indexed id, address indexed seeker, uint8 spread, uint8[3] cards, bool[3] reversed)',
+    'error EmptyQuestion()', 'error AlreadyDrewToday()', 'error NotFound()',
+  ];
+  const REVERTS = {
+    EmptyQuestion: 'Ask something to focus the cards.',
+    AlreadyDrewToday: 'You already drew today’s Daily Pull. Come back tomorrow — or try Past · Present · Future.',
+    NotFound: 'This reading isn’t in the deck.',
+  };
+
+  // Mirrors worker/src/index.js.
+  const SENSITIVE = /\b(health|ill|illness|sick|cancer|disease|diagnos\w*|surgery|doctor|medic\w*|die|dies|dying|death|dead|pregnan\w*|fertility|lawsuit|court|legal|lawyer|sue|divorce settlement|invest\w*|stocks?|crypto|bitcoin|lottery|gambl\w*|bet|loan|debt|mortgage)\b/i;
+  const YES_NO = /^(will|is|am|are|was|were|do|does|did|should|shall|can|could|would|has|have|had)\b/i;
+  const EXAMPLES = ['What should I focus on this week?', 'How can I grow at work?', 'What do I need to know about this relationship?'];
+
+  // ============================================================
+  // Network + mode
+  // ============================================================
+  function storage(key, value) {
+    try {
+      if (value === undefined) return localStorage.getItem(key);
+      if (value === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, value);
+      return true;
+    } catch { return value === undefined ? null : false; }
+  }
+
+  const params = new URLSearchParams(location.search);
+  const isLocal = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+  const netKey = params.get('net') === 'testnet' ? 'testnet' : 'mainnet';
+  const NET = { ...CONFIG.networks[netKey] };
+  // On localhost, pick up an address deployed from deploy.html so it can be tried before editing CONFIG.
+  if (!NET.contract && isLocal) NET.contract = storage('arcanai.contract.' + NET.chainId) || '';
+  const MAINNET = { ...CONFIG.networks.mainnet };
+  if (!MAINNET.contract && isLocal) MAINNET.contract = storage('arcanai.contract.' + MAINNET.chainId) || '';
+  const PREVIEW = !NET.contract; // no contract yet: draws are simulated in this browser
+  const CHAIN_HEX = '0x' + NET.chainId.toString(16);
+  const PREVIEW_WALLET = '0xA4CA0A1000000000000000000000000000000777';
+  const DAY = 86400;
+  const today = () => Math.floor(Date.now() / 1000 / DAY);
+  const localKey = (kind, id) => `arcanai.${kind}.${PREVIEW ? 'preview' : NET.chainId}.${id}`;
+
+  const shareUrl = (id, question) => {
+    const u = new URL(location.pathname, location.origin);
+    u.searchParams.set('reading', id);
+    if (netKey === 'testnet') u.searchParams.set('net', 'testnet');
+    if (question) u.searchParams.set('q', question);
+    return u.toString();
+  };
+
+  let CARDS = [];
+  const state = {
+    view: 'landing', account: null, chainId: null, previewWallet: false,
+    question: '', spread: 'three', includeQ: false,
+    daily: { usedToday: false, streak: 0, loaded: false },
+    reading: null, // { phase, id, spread, cards: [{ id, reversed, flipped }], question, shared, hash, at, seeker, interp, error }
+    total: null,
+  };
+
+  // ============================================================
+  // Small helpers
+  // ============================================================
+  const $ = (id) => document.getElementById(id);
+  function h(tag, props = {}, ...children) {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(props || {})) {
+      if (v === null || v === undefined || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k === 'style') el.setAttribute('style', v);
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of children.flat()) if (c !== null && c !== undefined && c !== false) el.append(c.nodeType ? c : String(c));
+    return el;
+  }
+  const short = (a) => (a ? `${a.slice(0, 6)}…${a.slice(-4)}` : '');
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const fmtDate = (sec) => new Date(sec * 1000).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  let toastTimer;
+  function toast(...parts) {
+    document.querySelector('.toast')?.remove();
+    const t = h('div', { class: 'toast', role: 'status' }, ...parts);
+    document.body.append(t);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.remove(), 4200);
+  }
+  async function copy(text, what = 'Link copied') {
+    try { await navigator.clipboard.writeText(text); toast(what); }
+    catch { window.prompt('Copy this link:', text); }
+  }
+
+  const friendly = (message) => Object.assign(new Error(message), { friendly: true });
+  function parseRevert(e) {
+    const iface = new ethers.Interface(ABI);
+    for (const data of [e?.data, e?.info?.error?.data?.data, e?.info?.error?.data, e?.error?.data?.data, e?.error?.data]) {
+      if (typeof data !== 'string' || !data.startsWith('0x')) continue;
+      try { return iface.parseError(data)?.name; } catch { /* not ours */ }
+    }
+    return null;
+  }
+  const isCancel = (e) => e?.code === 4001 || e?.code === 'ACTION_REJECTED' || e?.info?.error?.code === 4001;
+  function explain(e) {
+    if (e?.friendly) return e.message;
+    if (isCancel(e)) return 'Cancelled in MetaMask. No cards were drawn.';
+    const name = e?.revert?.name || parseRevert(e);
+    if (name && REVERTS[name]) return REVERTS[name];
+    if (e?.code === 'INSUFFICIENT_FUNDS' || /insufficient funds/i.test(e?.message || '')) return 'Not enough BOT for the gas fee.';
+    if (e?.code === -32002) return 'MetaMask is already asking. Open MetaMask to continue.';
+    return e?.shortMessage || e?.message || 'Something went wrong. Please try again.';
+  }
+
+  const cardArt = (id) => CARDS[id]?.art || 'cards/back.svg';
+  const BACK = 'cards/back.svg';
+
+  // ============================================================
+  // Chain + preview stores
+  // ============================================================
+  // Result.at is Array.prototype.at in ethers, so the timestamp is read by index.
+  const normReading = (r, id) => {
+    const count = Number(r.count);
+    return {
+      id: Number(id), seeker: ethers.getAddress(r.seeker), spread: spreadKey(r.spread), questionHash: r.questionHash, at: Number(r[6]),
+      cards: [...r.cards].slice(0, count).map((c, i) => ({ id: Number(c), reversed: Boolean(r.reversed[i]) })),
+    };
+  };
+
+  // Lower-casing first accepts an address pasted with the wrong checksum casing.
+  const contractAddress = () => ethers.getAddress(NET.contract.trim().toLowerCase());
+  let readerCache = null;
+  const reader = () => (readerCache ||= new ethers.Contract(contractAddress(), ABI, new ethers.JsonRpcProvider(NET.rpc, NET.chainId, { staticNetwork: true })));
+  async function writer() {
+    const signer = await new ethers.BrowserProvider(window.ethereum).getSigner();
+    return new ethers.Contract(contractAddress(), ABI, signer);
+  }
+
+  const chainStore = {
+    async total() { return Number(await reader().total()); },
+    async get(id) {
+      try { return normReading(await reader().getReading(id), id); }
+      catch (e) { if ((e?.revert?.name || parseRevert(e)) === 'NotFound') return null; throw e; }
+    },
+    async idsOf(addr) { return [...(await reader().readingsOf(addr))].map(Number); },
+    async daily(addr) {
+      const [streak, last] = await Promise.all([reader().streakOf(addr), reader().lastDailyDay(addr)]);
+      return { streak: Number(streak), usedToday: Number(last) === today() };
+    },
+    async draw(spreadIndex, questionHash, onStep) {
+      const contract = await writer();
+      await contract.draw.staticCall(spreadIndex, questionHash); // surfaces AlreadyDrewToday before MetaMask opens
+      onStep('confirm');
+      const tx = await contract.draw(spreadIndex, questionHash);
+      onStep('mining', tx.hash);
+      const receipt = await tx.wait();
+      if (receipt.status !== 1) throw friendly('The transaction failed on-chain. No cards were drawn.');
+      const log = receipt.logs.map((l) => { try { return contract.interface.parseLog(l); } catch { return null; } }).find((l) => l?.name === 'Drawn');
+      const count = Number(log.args.spread) === 0 ? 1 : 3;
+      return {
+        hash: tx.hash,
+        reading: {
+          id: Number(log.args.id), seeker: ethers.getAddress(log.args.seeker), spread: spreadKey(log.args.spread), at: Math.floor(Date.now() / 1000),
+          cards: [...log.args.cards].slice(0, count).map((c, i) => ({ id: Number(c), reversed: Boolean(log.args.reversed[i]) })),
+        },
+      };
+    },
+  };
+
+  // Preview: same rules as the contract, kept in this browser's localStorage.
+  const previewStore = {
+    key: 'arcanai.preview.v1',
+    read() {
+      try {
+        const data = JSON.parse(storage(this.key) || 'null');
+        if (data && Array.isArray(data.readings)) return data;
+      } catch { /* reseed */ }
+      const now = Math.floor(Date.now() / 1000);
+      const seed = [[1, [17, 37, 9], [false, true, false]], [0, [19, 0, 0], [false, false, false]], [1, [0, 57, 21], [false, false, true]]];
+      return {
+        readings: seed.map(([spread, cards, reversed], id) => ({ id, seeker: '0x5eE6000000000000000000000000000000000042', spread: spreadKey(spread), at: now - (3 - id) * 7200, cards: cards.slice(0, spread ? 3 : 1).map((c, i) => ({ id: c, reversed: reversed[i] })) })),
+        wallets: {},
+      };
+    },
+    write(data) { storage(this.key, JSON.stringify(data)); },
+    async total() { return this.read().readings.length; },
+    async get(id) { return this.read().readings[id] || null; },
+    async idsOf(addr) { return this.read().readings.filter((r) => r.seeker.toLowerCase() === addr.toLowerCase()).map((r) => r.id); },
+    async daily(addr) {
+      const w = this.read().wallets[addr.toLowerCase()] || { last: 0, streak: 0 };
+      return { streak: w.last + 1 >= today() ? w.streak : 0, usedToday: w.last === today() };
+    },
+    async draw(spreadIndex, questionHash, onStep) {
+      const data = this.read();
+      const who = state.account.toLowerCase();
+      const w = data.wallets[who] ||= { last: 0, streak: 0 };
+      if (spreadIndex === 0 && w.last === today()) throw friendly(REVERTS.AlreadyDrewToday);
+      onStep('confirm'); await sleep(700);
+      const hash = '0x' + [...crypto.getRandomValues(new Uint8Array(32))].map((b) => b.toString(16).padStart(2, '0')).join('');
+      onStep('mining', hash); await sleep(1800);
+      if (spreadIndex === 0) { w.streak = w.last + 1 === today() ? w.streak + 1 : 1; w.last = today(); }
+      const picks = [];
+      while (picks.length < (spreadIndex === 0 ? 1 : 3)) {
+        const [a, b] = crypto.getRandomValues(new Uint32Array(2));
+        const id = a % 78;
+        if (!picks.some((p) => p.id === id)) picks.push({ id, reversed: (b & 1) === 1 });
+      }
+      const reading = { id: data.readings.length, seeker: state.account, spread: spreadKey(spreadIndex), at: Math.floor(Date.now() / 1000), cards: picks };
+      data.readings.push(reading);
+      this.write(data);
+      return { hash, reading };
+    },
+  };
+  if (PREVIEW && params.has('reset')) storage(previewStore.key, null);
+  const store = PREVIEW ? previewStore : chainStore;
+
+  // ============================================================
+  // Wallet
+  // ============================================================
+  async function switchChain() {
+    const eth = window.ethereum;
+    try {
+      await eth.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN_HEX }] });
+    } catch (e) {
+      const unknownChain = e.code === 4902 || e?.data?.originalError?.code === 4902 || /unrecognized chain/i.test(e.message || '');
+      if (!unknownChain) throw e;
+      await eth.request({
+        method: 'wallet_addEthereumChain',
+        params: [{ chainId: CHAIN_HEX, chainName: NET.name, nativeCurrency: { name: 'BOT', symbol: 'BOT', decimals: 18 }, rpcUrls: [NET.rpc], blockExplorerUrls: [NET.explorer] }],
+      });
+    }
+    state.chainId = Number(await eth.request({ method: 'eth_chainId' }));
+    if (state.chainId !== NET.chainId) throw friendly(`MetaMask is not on ${NET.name}.`);
+    renderWallet();
+  }
+
+  async function setAccount(account, { preview = false } = {}) {
+    const next = account ? ethers.getAddress(account) : null;
+    if (next === state.account && preview === state.previewWallet) return;
+    state.account = next;
+    state.previewWallet = preview;
+    state.daily = { usedToday: false, streak: 0, loaded: false };
+    renderWallet();
+    await refreshDaily();
+    if (state.view === 'history') renderHistory();
+  }
+
+  async function connect() {
+    const eth = window.ethereum;
+    if (!eth) {
+      if (PREVIEW) { await setAccount(PREVIEW_WALLET, { preview: true }); storage('arcanai.previewWallet', '1'); toast('Preview wallet connected — nothing touches the chain.'); return true; }
+      installModal();
+      return false;
+    }
+    try {
+      const [account] = await eth.request({ method: 'eth_requestAccounts' });
+      state.chainId = Number(await eth.request({ method: 'eth_chainId' }));
+      await setAccount(account);
+      if (!PREVIEW && state.chainId !== NET.chainId) await switchChain();
+      return !!state.account;
+    } catch (e) {
+      if (!isCancel(e)) toast(explain(e));
+      renderWallet();
+      return false;
+    }
+  }
+
+  const wrongNetwork = () => !PREVIEW && !state.previewWallet && !!state.account && state.chainId !== NET.chainId;
+
+  // Connected and on BOT Chain, ready to send a transaction.
+  async function ensureReady() {
+    if (!state.account) { if (!(await connect())) return false; }
+    if (wrongNetwork()) {
+      try { await switchChain(); } catch (e) { if (!isCancel(e)) toast(explain(e)); return false; }
+    }
+    return true;
+  }
+
+  async function initWallet() {
+    const eth = window.ethereum;
+    if (!eth) {
+      if (PREVIEW && storage('arcanai.previewWallet')) await setAccount(PREVIEW_WALLET, { preview: true });
+      return;
+    }
+    eth.on?.('accountsChanged', ([account]) => setAccount(account));
+    eth.on?.('chainChanged', (id) => { state.chainId = Number(id); renderWallet(); });
+    try {
+      const [account] = await eth.request({ method: 'eth_accounts' });
+      state.chainId = Number(await eth.request({ method: 'eth_chainId' }));
+      if (account) await setAccount(account);
+    } catch { /* stay signed out */ }
+  }
+
+  function renderWallet() {
+    const parts = [];
+    if (netKey === 'testnet') parts.push(h('span', { class: 'badge' }, 'Testnet'));
+    if (PREVIEW) parts.push(h('span', { class: 'badge', title: 'No contract configured: draws are simulated in this browser.' }, 'Preview'));
+    if (!window.ethereum && !PREVIEW) {
+      parts.push(h('a', { class: 'pill small', href: 'https://metamask.io/download/', target: '_blank', rel: 'noopener' }, 'Install MetaMask'));
+    } else if (!state.account) {
+      parts.push(h('button', { class: 'pill small', type: 'button', onclick: connect }, 'Connect'));
+    } else if (wrongNetwork()) {
+      parts.push(h('button', { class: 'pill lime small', type: 'button', onclick: () => switchChain().catch((e) => { if (!isCancel(e)) toast(explain(e)); }) }, 'Switch to BOT Chain'));
+    } else {
+      parts.push(h('button', { class: 'pill small', type: 'button', title: state.account, onclick: () => go('history') }, h('span', { class: 'dot' }), short(state.account)));
+    }
+    $('wallet-slot').replaceChildren(...parts);
+  }
+
+  function installModal() {
+    openModal(
+      h('h2', {}, 'Install MetaMask'),
+      h('p', {}, 'The cards are shuffled and drawn by a contract on BOT Chain, so drawing needs a wallet. Shared readings open without one.'),
+      h('div', { class: 'row-end', style: 'margin-top:20px' },
+        h('a', { class: 'pill lime', href: 'https://metamask.io/download/', target: '_blank', rel: 'noopener' }, 'Get MetaMask ↗'),
+        h('button', { class: 'pill', type: 'button', onclick: closeModal }, 'Not now')));
+  }
+
+  async function refreshDaily() {
+    if (!state.account) { state.daily = { usedToday: false, streak: 0, loaded: false }; renderSpreads(); return; }
+    try { state.daily = { ...(await store.daily(state.account)), loaded: true }; } catch { /* keep defaults */ }
+    renderSpreads();
+  }
+
+  // ============================================================
+  // Views
+  // ============================================================
+  function go(view, { scroll = true } = {}) {
+    closeMenu();
+    if (view === 'spread' && !validateQuestion(true)) view = 'ask';
+    state.view = view;
+    document.querySelectorAll('.view').forEach((v) => v.classList.toggle('active', v.dataset.view === view));
+    if (view === 'ask') setTimeout(() => $('question').focus({ preventScroll: true }), 300);
+    if (view === 'spread') { $('recap-q').textContent = state.question; renderSpreads(); }
+    if (view === 'history') renderHistory();
+    if (view !== 'reading' && params.has('reading')) { params.delete('reading'); params.delete('q'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '')); }
+    if (scroll) window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  }
+
+  // ---------- Step 1 · landing ----------
+  // Our own textures, drawn with SVG noise: paper, grass, sky and stone.
+  const noise = (freq, oct, [r, g, b], a, seed = 2) =>
+    `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='${freq}' numOctaves='${oct}' seed='${seed}' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 ${r} 0 0 0 0 ${g} 0 0 0 0 ${b} 0 0 0 ${a} 0'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`)}")`;
+  const TEXTURES = {
+    paper: `${noise(0.9, 3, [0.45, 0.4, 0.33], 0.35)}, linear-gradient(160deg, #F6F1E7, #EDE6D8)`,
+    grass: `${noise(0.06, 4, [0.12, 0.3, 0.08], 0.85, 7)}, linear-gradient(170deg, #B8D98A, #6CC24A)`,
+    sky: `radial-gradient(40% 30% at 30% 40%, rgba(255,255,255,.9), transparent 70%), radial-gradient(35% 25% at 70% 65%, rgba(255,255,255,.7), transparent 70%), linear-gradient(180deg, #BFD9F2, #EAF3FB)`,
+    stone: `${noise(0.035, 5, [0.35, 0.35, 0.34], 0.7, 11)}, linear-gradient(140deg, #D9D8D3, #B9B8B2)`,
+    lime: `${noise(0.8, 2, [0.3, 0.4, 0.1], 0.18)}, linear-gradient(140deg, #ECF8A6, #D9F23F)`,
+  };
+  function renderLanding() {
+    // [texture, left, top, width, height, rotation, blur from, blur to, hide on mobile]
+    const patches = [
+      ['paper', '8%', '14%', 'min(22vw,260px)', 'min(15vw,170px)', '-6deg', 0, 5, false],
+      ['sky', '68%', '10%', 'min(26vw,300px)', 'min(17vw,190px)', '5deg', 4, 0, false],
+      ['grass', '74%', '58%', 'min(18vw,210px)', 'min(24vw,270px)', '-4deg', 0, 6, false],
+      ['stone', '16%', '56%', 'min(15vw,180px)', 'min(19vw,220px)', '7deg', 6, 1, true],
+      ['lime', '44%', '80%', 'min(8vw,90px)', 'min(8vw,90px)', '12deg', 2, 8, true],
+      ['paper', '58%', '30%', 'min(7vw,80px)', 'min(10vw,110px)', '-10deg', 8, 2, true],
+    ];
+    $('collage').replaceChildren(...patches.map(([t, x, y, w, hh, r, b1, b2, hideSm], i) => h('div', {
+      class: 'patch',
+      style: `left:${x};top:${y};width:${w};height:${hh};background:${TEXTURES[t]};--r:${r};--b1:${b1}px;--b2:${b2}px;--delay:${-i * 2.3}s;--dx:${i % 2 ? -12 : 12}px;--dy:${i % 3 ? -18 : 14}px;${hideSm && innerWidth < 720 ? 'display:none' : ''}`,
+    })));
+    const word = $('wordmark');
+    word.replaceChildren(...[...'arcanai'].map((ch, i) => h('span', { style: `--i:${i}`, 'aria-hidden': 'true' }, ch)));
+    requestAnimationFrame(() => word.classList.add('in'));
+    const card = $('float-card');
+    const img = card.querySelector('img');
+    window.addEventListener('pointermove', (e) => {
+      if (state.view !== 'landing') return;
+      img.style.setProperty('--tx', `${((e.clientX / innerWidth) - .5) * 18}deg`);
+      img.style.setProperty('--ty', `${((e.clientY / innerHeight) - .5) * -14}deg`);
+    }, { passive: true });
+  }
+
+  // ---------- Step 2 · ask ----------
+  const qInput = $('question');
+  function fitQuestion() { qInput.style.height = 'auto'; qInput.style.height = qInput.scrollHeight + 'px'; }
+  function renderChips() {
+    $('chips').replaceChildren(...EXAMPLES.map((q) => h('button', { class: 'chip', type: 'button', onclick: () => { qInput.value = q; onQuestion(); qInput.focus(); } }, q)));
+  }
+  const careNote = () => h('div', { class: 'note' }, h('span', { 'aria-hidden': 'true' }, '🌿'),
+    h('div', {}, h('b', {}, 'Tarot is for reflection, not answers. '), 'For health, legal or money decisions, a professional is the right person to talk to. The cards can still offer a gentle way to think it through.'));
+  function onQuestion() {
+    fitQuestion();
+    state.question = qInput.value.replace(/\s+/g, ' ').trim();
+    const hint = $('ask-hint');
+    hint.classList.remove('warn');
+    hint.textContent = YES_NO.test(state.question) && state.question.length > 6 ? 'Tarot likes open questions. Try “What do I need to know about…” or “How can I…”.' : '';
+    $('ask-note').replaceChildren(...(SENSITIVE.test(state.question) ? [careNote()] : []));
+  }
+  function validateQuestion(show) {
+    if (state.question) return true;
+    if (show) { const hint = $('ask-hint'); hint.classList.add('warn'); hint.textContent = 'Ask something to focus the cards.'; }
+    return false;
+  }
+
+  // ---------- Step 3 · spread ----------
+  function renderSpreads() {
+    const root = $('spreads');
+    if (!root) return;
+    const { usedToday, streak, loaded } = state.daily;
+    if (state.spread === 'daily' && usedToday) state.spread = 'three';
+    const backs = (n) => h('div', { class: 'mini-fan' }, ...Array.from({ length: n }, () => h('img', { src: BACK, alt: '' })));
+    const dailyStatus = !state.account
+      ? h('span', { class: 'muted' }, 'One per wallet per day · builds a streak')
+      : usedToday
+        ? h('span', {}, `Come back tomorrow — your streak is ${streak} 🔥`)
+        : h('span', {}, loaded && streak ? `Streak: ${streak} 🔥 · draw today to keep it` : 'Start a streak today 🔥');
+    const card = (key, title, desc, n, status, disabled) => h('button', {
+      class: 'tile s6 m6 spread-card', type: 'button', 'aria-pressed': String(state.spread === key), disabled,
+      onclick: () => { state.spread = key; renderSpreads(); },
+    }, backs(n), h('div', {}, h('div', { class: 'name' }, title), h('div', { class: 'desc' }, desc)), h('div', { class: 'status' }, status));
+    root.replaceChildren(
+      card('daily', 'Daily Pull', 'One card for the day ahead. A small focus to carry with you.', 1, dailyStatus, usedToday),
+      card('three', 'Past · Present · Future', 'Three cards that tell a story: where you’ve been, where you are, where things may be heading.', 3, h('span', { class: 'muted' }, 'Always available'), false),
+    );
+  }
+
+  // ============================================================
+  // Steps 4–5 · draw and read
+  // ============================================================
+  async function startDraw() {
+    if (!validateQuestion(true)) return go('ask');
+    if (!(await ensureReady())) return;
+    if (state.spread === 'daily' && state.daily.usedToday) { toast(REVERTS.AlreadyDrewToday); return; }
+    const spread = state.spread;
+    const question = state.question;
+    // A random salt keeps short questions from being guessed from their hash. Both stay in this browser.
+    const salt = ethers.hexlify(ethers.randomBytes(32));
+    const questionHash = ethers.solidityPackedKeccak256(['bytes32', 'string'], [salt, question]);
+    state.reading = { phase: 'shuffling', step: 'confirm', spread, question, cards: [], shared: false };
+    go('reading');
+    renderReading();
+    try {
+      const { hash, reading } = await store.draw(SPREADS[spread].index, questionHash, (step, txHash) => {
+        Object.assign(state.reading, { step, hash: txHash || state.reading.hash });
+        renderTableStatus();
+      });
+      storage(localKey('q', reading.id), JSON.stringify({ question, salt }));
+      state.reading = { ...reading, phase: 'dealt', question, hash, shared: false, interp: null, cards: reading.cards.map((c) => ({ ...c, flipped: false })) };
+      history.replaceState(null, '', shareUrl(reading.id).replace(location.origin, ''));
+      renderReading();
+      interpret(state.reading);
+      refreshDaily();
+      refreshTotal();
+    } catch (e) {
+      console.error(e);
+      Object.assign(state.reading, { phase: 'error', error: explain(e) });
+      renderReading();
+    }
+  }
+
+  async function openReading(id) {
+    const n = Number(id);
+    state.reading = { phase: 'loading', id: n };
+    go('reading', { scroll: true });
+    renderReading();
+    if (!Number.isInteger(n) || n < 0 || String(id).trim() === '') { state.reading.phase = 'missing'; return renderReading(); }
+    try {
+      const r = await store.get(n);
+      if (!r) { state.reading.phase = 'missing'; return renderReading(); }
+      const mine = state.account && r.seeker.toLowerCase() === state.account.toLowerCase();
+      let question = '';
+      try { question = JSON.parse(storage(localKey('q', n)) || 'null')?.question || ''; } catch { /* none */ }
+      const sharedQ = params.get('reading') === String(n) ? (params.get('q') || '').slice(0, 200) : '';
+      state.reading = { ...r, phase: 'dealt', question: question || sharedQ, sharedQuestion: !question && !!sharedQ, shared: !mine, interp: null, cards: r.cards.map((c) => ({ ...c, flipped: false })) };
+      history.replaceState(null, '', shareUrl(n, state.reading.sharedQuestion ? sharedQ : '').replace(location.origin, ''));
+      renderReading();
+      interpret(state.reading);
+      // Revisited readings turn over on their own, one by one.
+      state.reading.cards.forEach((_, i) => setTimeout(() => flipCard(i), 700 + i * 650));
+    } catch (e) {
+      console.error(e);
+      Object.assign(state.reading, { phase: 'error', error: 'Could not reach BOT Chain. Check your connection and try again.', retryOpen: n });
+      renderReading();
+    }
+  }
+
+  // ---------- AI reading, with a classic-meanings fallback ----------
+  async function askAI(reading) {
+    if (!CONFIG.aiUrl) return null;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), CONFIG.aiTimeoutMs);
+    try {
+      const res = await fetch(CONFIG.aiUrl, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal,
+        body: JSON.stringify({ question: reading.question || '', spread: reading.spread, cards: reading.cards.map(({ id, reversed }) => ({ id, reversed })) }),
+      });
+      if (!res.ok) return null;
+      const out = await res.json();
+      const positions = SPREADS[reading.spread].positions;
+      if (!Array.isArray(out.cards) || out.cards.length !== positions.length || !out.story || !out.reflection) return null;
+      return { source: 'ai', cards: out.cards.map((c) => String(c.reading || '')), story: String(out.story), reflection: String(out.reflection) };
+    } catch { return null; }
+    finally { clearTimeout(timer); }
+  }
+
+  const POSITION_LEAD = {
+    Today: (n) => `For today, ${n} sets the tone.`,
+    Past: (n) => `Behind you, ${n} shows what shaped this.`,
+    Present: (n) => `Right now, ${n} is at the centre.`,
+    Future: (n) => `Looking ahead, ${n} hints at what may come into focus.`,
+  };
+  const ELEMENT_NOTE = {
+    fire: ['Fire', 'passion and action lead', 'Where could a little more courage take you this week?'],
+    water: ['Water', 'emotions lead', 'What is your heart trying to tell you that you haven’t said out loud?'],
+    air: ['Air', 'thoughts and truth lead', 'Which thought keeps returning, and is it actually true?'],
+    earth: ['Earth', 'practical matters lead', 'What small, steady step would make you feel more grounded?'],
+    spirit: ['Spirit', 'big life themes lead', 'What chapter of your life does this feel like, and what is it teaching you?'],
+  };
+  function analyse(reading) {
+    const drawn = reading.cards.map((c) => ({ ...CARDS[c.id], reversed: c.reversed }));
+    const counts = {};
+    drawn.forEach((c) => { counts[c.element] = (counts[c.element] || 0) + 1; });
+    const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+    const majors = drawn.filter((c) => c.arcana === 'major').length;
+    const reversals = drawn.filter((c) => c.reversed).length;
+    return { drawn, counts, element: top[0], pct: Math.round((top[1] / drawn.length) * 100), majors, minors: drawn.length - majors, reversals };
+  }
+  function classic(reading) {
+    const a = analyse(reading);
+    const positions = SPREADS[reading.spread].positions;
+    const cards = a.drawn.map((c, i) => {
+      const meaning = c.reversed ? CARDS[c.id].reversed : CARDS[c.id].upright;
+      return `${POSITION_LEAD[positions[i]](`${c.name}${c.reversed ? ' reversed' : ''}`)} ${meaning.meaning}`;
+    });
+    const [el, lead, reflection] = ELEMENT_NOTE[a.element];
+    const parts = [];
+    if (a.drawn.length === 1) parts.push(`${a.drawn[0].name} is your card for today: ${CARDS[a.drawn[0].id][a.drawn[0].reversed ? 'reversed' : 'upright'].keywords.slice(0, 2).join(' and ')}.`);
+    else parts.push(`From ${a.drawn[0].name} through ${a.drawn[1].name} to ${a.drawn[2].name}, ${el.toLowerCase()} runs through this spread: ${lead}.`);
+    if (a.majors >= 2) parts.push('With several Major Arcana, this feels like a bigger chapter rather than a passing moment.');
+    else if (a.majors === 1 && a.drawn.length > 1) parts.push('One Major Arcana card anchors the story in a deeper theme.');
+    if (a.reversals >= 2) parts.push('Several reversals suggest something is being held back or worked through inwardly; go gently.');
+    else if (a.reversals === 1 && a.drawn.length === 1) parts.push('Reversed, its energy turns inward: notice where you are holding back.');
+    return { source: 'classic', cards, story: parts.join(' '), reflection };
+  }
+
+  async function interpret(reading) {
+    const cacheKey = localKey('reading', reading.id);
+    let cached = null;
+    try { cached = JSON.parse(storage(cacheKey) || 'null'); } catch { /* none */ }
+    if (cached?.cards?.length === reading.cards.length) { reading.interp = cached; return fillReading(); }
+    const ai = await askAI(reading);
+    reading.interp = ai || classic(reading);
+    if (ai) storage(cacheKey, JSON.stringify(ai));
+    if (state.reading === reading) fillReading();
+  }
+
+  // ---------- rendering ----------
+  const shimmer = () => h('div', { class: 'shimmer', 'aria-label': 'The reader is thinking' }, h('i'), h('i'), h('i'));
+  function ringSvg(pct, size = 150, stroke = 10) {
+    const r = (size - stroke) / 2, c = 2 * Math.PI * r;
+    const gid = 'g' + Math.random().toString(36).slice(2, 8);
+    const svg = `<svg viewBox="0 0 ${size} ${size}" aria-hidden="true"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D9F23F"/><stop offset="1" stop-color="#6CC24A"/></linearGradient></defs><circle class="track" cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke-width="${stroke}"/><circle class="bar" cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="url(#${gid})" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${c.toFixed(1)}" data-target="${(c * (1 - pct / 100)).toFixed(1)}"/></svg>`;
+    return svg;
+  }
+  const animateRings = (root) => requestAnimationFrame(() => requestAnimationFrame(() => root.querySelectorAll('.bar[data-target]').forEach((b) => b.setAttribute('stroke-dashoffset', b.dataset.target))));
+
+  function renderTableStatus() {
+    const el = document.querySelector('#reading-root .table-status');
+    const r = state.reading;
+    if (!el || !r) return;
+    const parts = r.step === 'mining'
+      ? [h('p', { class: 'big' }, h('span', { class: 'spinner-dots' }, PREVIEW ? 'Shuffling the preview deck' : 'Shuffling on BOT Chain')),
+        h('p', { class: 'muted' }, PREVIEW ? 'Preview mode: nothing touches the chain.' : 'The contract is mixing the deck and drawing your cards.'),
+        r.hash && !PREVIEW ? h('p', {}, h('a', { class: 'muted', href: `${NET.explorer}/tx/${r.hash}`, target: '_blank', rel: 'noopener' }, 'View transaction ↗')) : null]
+      : [h('p', { class: 'big' }, PREVIEW ? 'Cutting the preview deck' : 'Confirm the draw in MetaMask'),
+        h('p', { class: 'muted' }, PREVIEW ? 'Preview mode: nothing touches the chain.' : 'Only a hash of your question goes on-chain.')];
+    el.replaceChildren(...parts.filter(Boolean));
+  }
+
+  function renderReading() {
+    const root = $('reading-root');
+    const r = state.reading;
+    if (!r) return root.replaceChildren();
+    const msg = (title, text, ...actions) => root.replaceChildren(h('div', { class: 'tile msg-tile' },
+      h('p', { class: 'eyebrow' }, 'ArcanAI'), h('h2', { class: 'title' }, title), text ? h('p', { class: 'lede', style: 'margin:0 auto' }, text) : null,
+      h('div', { class: 'row-end' }, ...actions)));
+
+    if (r.phase === 'loading') {
+      return root.replaceChildren(h('div', { class: 'tile table-tile' }, h('div', { class: 'deck' }, ...[0, 1, 2].map((i) => h('img', { src: BACK, alt: '', style: `--i:${i};transform:translateY(${-i * 2}px)` }))), h('p', { class: 'muted spinner-dots' }, 'Finding this reading in the deck')));
+    }
+    if (r.phase === 'missing') {
+      return msg('This reading isn’t in the deck.', 'The link may be mistyped, or the reading was drawn on another network.', h('button', { class: 'pill lime big', type: 'button', onclick: () => go('ask') }, 'Begin a reading'));
+    }
+    if (r.phase === 'error') {
+      const retry = r.retryOpen !== undefined ? () => openReading(r.retryOpen) : startDraw;
+      return msg('The cards stayed in the deck.', r.error,
+        h('button', { class: 'pill black big', type: 'button', onclick: retry }, 'Try again'),
+        h('button', { class: 'pill big', type: 'button', onclick: () => go(r.retryOpen !== undefined ? 'landing' : 'spread') }, r.retryOpen !== undefined ? 'Home' : 'Back to spreads'));
+    }
+
+    const spread = SPREADS[r.spread];
+    const head = h('div', { class: 'reading-head' },
+      h('p', { class: 'eyebrow' }, r.phase === 'shuffling' ? 'Step 3 of 3 · Shuffle & draw' : `${spread.label}${r.id !== undefined ? ` · Reading #${r.id}` : ''}`),
+      h('h2', { class: 'title' }, r.question ? `“${r.question}”` : 'A general reading'),
+      h('div', { class: 'meta' },
+        r.sharedQuestion ? h('span', {}, 'Question shared by the seeker') : null,
+        r.at ? h('span', {}, fmtDate(r.at)) : null,
+        r.seeker ? h('span', {}, `Drawn by ${short(r.seeker)}`) : null,
+        r.hash && !PREVIEW ? h('a', { href: `${NET.explorer}/tx/${r.hash}`, target: '_blank', rel: 'noopener' }, 'Transaction ↗') : null,
+        r.id !== undefined && !PREVIEW ? h('a', { href: `${NET.explorer}/address/${NET.contract}`, target: '_blank', rel: 'noopener' }, 'Contract ↗') : null,
+        PREVIEW && r.phase !== 'shuffling' ? h('span', {}, 'Preview draw') : null));
+
+    if (r.phase === 'shuffling') {
+      root.replaceChildren(head, h('div', { class: 'tile table-tile shuffling' },
+        h('div', { class: 'deck' }, ...Array.from({ length: 8 }, (_, i) => h('img', { src: BACK, alt: '', style: `--i:${i}` }))),
+        h('div', { class: 'table-status', 'aria-live': 'polite' })));
+      return renderTableStatus();
+    }
+
+    const daily = r.spread === 'daily';
+    const grid = h('div', { class: 'bento', id: 'reading-grid' });
+    r.cards.forEach((c, i) => {
+      const card = CARDS[c.id];
+      const side = c.reversed ? card.reversed : card.upright;
+      const tile = h('article', { class: `tile card-tile ${daily ? 's8 daily' : 's4'} ${c.reversed ? 'rev' : ''}`, style: `--i:${i}`, 'data-card': i },
+        daily ? null : h('div', { class: 'pos' }, h('span', {}, spread.positions[i]), h('span', {}, `${i + 1} / ${r.cards.length}`)),
+        h('button', { class: 'flip', type: 'button', 'aria-label': `Turn over the ${spread.positions[i]} card`, onclick: () => flipCard(i) },
+          h('div', { class: 'inner' },
+            h('div', { class: 'face back' }, h('img', { src: BACK, alt: '' }), h('span', { class: 'flip-hint' }, 'Tap to turn')),
+            h('div', { class: 'face front' }, h('img', { src: cardArt(c.id), alt: `${card.name}${c.reversed ? ', reversed' : ''}` })))),
+        h('div', { class: 'card-text' },
+          daily ? h('div', { class: 'pos', style: 'margin-bottom:10px' }, h('span', {}, 'Today')) : null,
+          h('p', { class: 'cname' }, card.name),
+          h('span', { class: `orient ${c.reversed ? '' : 'up'}` }, c.reversed ? 'Reversed' : 'Upright'),
+          h('p', { class: 'kw' }, side.keywords.join(' · ')),
+          h('div', { class: 'interp-slot' }, shimmer())));
+      if (c.flipped) tile.classList.add('flipped');
+      grid.append(tile);
+    });
+
+    const a = analyse(r);
+    const [el, lead] = ELEMENT_NOTE[a.element];
+    const sensitive = SENSITIVE.test(r.question || '');
+    const extras = h('div', { class: 'extras' },
+      h('div', { class: 'tile s4 energy' },
+        h('h3', {}, 'Energy'),
+        h('div', { class: 'ring-wrap' },
+          h('div', { class: 'ring', html: ringSvg(a.pct) }, h('div', { class: 'center' }, h('div', { class: 'pct' }, `${a.pct}%`), h('div', { class: 'el' }, el))),
+          h('div', { class: 'ring-note' }, h('b', {}, `${a.pct}% ${el} — ${lead}`), a.drawn.length > 1 ? 'Share of the cards in this spread.' : 'One card, one clear energy.',
+            h('div', { class: 'el-list' }, ...Object.entries(a.counts).map(([k, n]) => h('span', {}, `${ELEMENT_NOTE[k][0]} ${n}`)))))),
+      h('div', { class: `tile ${daily ? 's7' : 's8'} story` }, h('h3', {}, 'The story'), h('div', { class: 'story-slot' }, shimmer()), h('div', { class: 'source-slot' })),
+      h('div', { class: `tile ${daily ? 's5' : 's4'} split` },
+        h('h3', {}, 'Major vs Minor'),
+        h('div', { class: 'num' }, `${a.majors}`, h('small', {}, ` / ${a.drawn.length} Major`)),
+        h('div', { class: 'bars' }, ...a.drawn.map((c) => h('span', { class: c.arcana === 'major' ? 'major' : 'minor' }))),
+        h('div', { class: 'legend' }, h('span', {}, h('i', { style: 'background:#0E0E0E' }), 'Major · life themes'), h('span', {}, h('i', { style: 'background:linear-gradient(135deg,#D9F23F,#6CC24A)' }), 'Minor · daily life')),
+        h('p', { class: 'cap', style: 'margin-top:12px' }, a.majors >= 2 ? 'A big chapter.' : a.majors === 1 ? 'One deeper theme runs through it.' : 'Everyday energy: things you can shape.', a.reversals ? ` ${a.reversals} reversed.` : '')),
+      h('div', { class: `tile ${daily ? 's12' : 's8'} reflection` }, h('h3', {}, 'Reflection'), h('div', { class: 'reflection-slot' }, h('p', {}, '…')),
+        h('img', { class: 'sigil', src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M20 4l3.2 12.8L36 20l-12.8 3.2L20 36l-3.2-12.8L4 20l12.8-3.2z" fill="#D9F23F"/></svg>'), alt: '' })),
+      sensitive ? h('div', { class: 'tile s12 care' }, '🌿 Tarot is for reflection, not predictions. For health, legal or money decisions, please talk to a professional you trust.') : null,
+      shareTile(r));
+    grid.append(extras);
+    root.replaceChildren(head, grid);
+    fillReading();
+    checkRevealed();
+  }
+
+  function shareTile(r) {
+    const xText = `I drew ${r.cards.map((c) => CARDS[c.id].name + (c.reversed ? ' (reversed)' : '')).join(', ')} on ArcanAI — shuffled and drawn on BOT Chain.`;
+    const link = () => shareUrl(r.id, state.includeQ && r.question && !r.shared ? r.question : (r.sharedQuestion ? r.question : ''));
+    return h('div', { class: 'tile s12 share-tile' },
+      h('div', {},
+        h('h3', { style: 'margin:0 0 6px' }, 'Keep it or share it'),
+        r.question && !r.shared
+          ? h('label', { class: 'check' }, h('input', { type: 'checkbox', checked: state.includeQ, onchange: (e) => { state.includeQ = e.target.checked; } }), 'Include my question in the link')
+          : h('p', { class: 'cap' }, 'Anyone with the link can open this reading. No wallet needed.')),
+      h('div', { class: 'actions' },
+        h('button', { class: 'pill', type: 'button', onclick: () => copy(link()) }, 'Copy link'),
+        h('a', { class: 'pill', href: '#', onclick: (e) => { e.preventDefault(); window.open(`https://x.com/intent/post?text=${encodeURIComponent(xText)}&url=${encodeURIComponent(link())}`, '_blank', 'noopener'); } }, 'Share on X'),
+        h('button', { class: 'pill', type: 'button', onclick: () => go('history') }, 'My readings'),
+        h('button', { class: 'pill lime', type: 'button', onclick: () => { qInput.value = ''; onQuestion(); go('ask'); } }, 'New reading')));
+  }
+
+  function flipCard(i) {
+    const r = state.reading;
+    if (!r || !r.cards[i] || r.cards[i].flipped) return;
+    r.cards[i].flipped = true;
+    const tile = document.querySelector(`#reading-grid [data-card="${i}"]`);
+    if (tile) { tile.classList.add('flipped'); tile.querySelector('.flip').setAttribute('aria-label', `${CARDS[r.cards[i].id].name}${r.cards[i].reversed ? ', reversed' : ''}`); }
+    checkRevealed();
+  }
+  function checkRevealed() {
+    const r = state.reading;
+    const grid = $('reading-grid');
+    if (!grid || !r?.cards?.length || !r.cards.every((c) => c.flipped) || grid.classList.contains('revealed')) return;
+    setTimeout(() => { grid.classList.add('revealed'); animateRings(grid); }, 900);
+  }
+
+  function fillReading() {
+    const r = state.reading;
+    const grid = $('reading-grid');
+    if (!grid || !r?.interp) return;
+    r.cards.forEach((_, i) => {
+      const slot = grid.querySelector(`[data-card="${i}"] .interp-slot`);
+      slot?.replaceChildren(h('p', { class: 'interp' }, r.interp.cards[i]));
+    });
+    grid.querySelector('.story-slot')?.replaceChildren(h('p', {}, r.interp.story));
+    grid.querySelector('.reflection-slot')?.replaceChildren(h('p', {}, r.interp.reflection));
+    grid.querySelector('.source-slot')?.replaceChildren(h('span', { class: 'source', title: r.interp.source === 'ai' ? 'Written by AI from the cards’ traditional meanings.' : (CONFIG.aiUrl ? 'The AI reader was unavailable, so this reading uses the classic meanings.' : 'No AI reader configured yet, so this reading uses the classic meanings.') }, r.interp.source === 'ai' ? 'Read by AI, grounded in the classic meanings' : 'Classic meanings'));
+  }
+
+  // ============================================================
+  // Step 6 · history + streak
+  // ============================================================
+  async function renderHistory() {
+    const root = $('history-root');
+    if (!state.account) {
+      root.replaceChildren(h('div', { class: 'tile s12 msg-tile' }, h('h2', { class: 'title' }, 'Connect to see your readings.'), h('p', { class: 'lede', style: 'margin:0 auto' }, 'Your draws are stored on BOT Chain under your wallet address.'),
+        h('div', { class: 'row-end' }, h('button', { class: 'pill black big', type: 'button', onclick: connect }, window.ethereum || PREVIEW ? 'Connect wallet' : 'Install MetaMask'))));
+      return;
+    }
+    const account = state.account;
+    root.replaceChildren(h('div', { class: 'tile s12' }, shimmer()));
+    try {
+      const [ids, daily] = await Promise.all([store.idsOf(account), store.daily(account)]);
+      const latest = ids.slice(-30).reverse();
+      const readings = (await Promise.all(latest.map((id) => store.get(id)))).filter(Boolean);
+      if (state.account !== account || state.view !== 'history') return;
+      const qOf = (id) => { try { return JSON.parse(storage(localKey('q', id)) || 'null')?.question || ''; } catch { return ''; } };
+      const list = readings.length
+        ? h('div', { class: 'hist-list' }, ...readings.map((r) => h('button', { class: 'hist-row', type: 'button', onclick: () => openReading(r.id) },
+          h('div', { class: 'thumbs' }, ...r.cards.map((c) => h('img', { src: cardArt(c.id), alt: '', class: c.reversed ? 'rev' : '' }))),
+          h('div', { class: 'what' }, h('b', {}, qOf(r.id) || r.cards.map((c) => CARDS[c.id].name).join(' · ')), h('span', {}, `${SPREADS[r.spread].label} · ${fmtDate(r.at)}`)),
+          h('span', { class: 'id' }, `#${r.id}`))))
+        : h('p', { class: 'muted' }, 'No readings yet. Your first draw will appear here.');
+      root.replaceChildren(
+        h('div', { class: 'tile s4' }, h('h3', {}, 'Daily streak'), h('div', { class: 'streak-num' }, `${daily.streak} 🔥`),
+          h('p', { class: 'cap', style: 'margin-top:12px' }, daily.usedToday ? 'Today’s Daily Pull is done. Come back tomorrow.' : daily.streak ? 'Draw today’s Daily Pull to keep it going.' : 'One Daily Pull a day builds a streak.')),
+        h('div', { class: 'tile s8' }, h('h3', {}, `${ids.length} reading${ids.length === 1 ? '' : 's'} · ${short(account)}`), list,
+          h('div', { class: 'row-end', style: 'margin-top:20px' }, h('button', { class: 'pill lime', type: 'button', onclick: () => go('ask') }, 'New reading'))));
+    } catch (e) {
+      console.error(e);
+      root.replaceChildren(h('div', { class: 'tile s12' }, h('p', {}, 'Could not reach BOT Chain. '), h('button', { class: 'pill', type: 'button', onclick: renderHistory }, 'Try again')));
+    }
+  }
+
+  // ============================================================
+  // About tarot, modal, menu
+  // ============================================================
+  let lastFocus = null;
+  function openModal(...content) {
+    closeModal();
+    lastFocus = document.activeElement;
+    const close = h('button', { class: 'modal-close', type: 'button', 'aria-label': 'Close', onclick: closeModal }, '×');
+    const modal = h('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', onclick: (e) => { if (e.target === modal) closeModal(); } }, h('div', { class: 'modal-card' }, close, ...content));
+    document.body.append(modal);
+    close.focus();
+  }
+  function closeModal() { const m = document.querySelector('.modal'); if (m) { m.remove(); lastFocus?.focus?.(); } }
+  function aboutModal() {
+    openModal(
+      h('p', { class: 'eyebrow' }, 'About tarot'),
+      h('h2', {}, '78 cards, one story.'),
+      h('p', {}, 'Tarot is a deck for reflection. Each card is a symbol; the spread gives it context; together they tell a story you can think with.'),
+      h('h4', {}, 'Major Arcana · 22 cards'),
+      h('p', {}, 'From 0 The Fool to 21 The World: the big life themes. Many Majors in a reading suggest a bigger chapter.'),
+      h('h4', {}, 'Minor Arcana · 56 cards in four suits'),
+      h('div', { class: 'suits' },
+        h('div', {}, h('b', {}, 'Wands · fire'), 'passion, action'), h('div', {}, h('b', {}, 'Cups · water'), 'emotions, relationships'),
+        h('div', {}, h('b', {}, 'Swords · air'), 'thoughts, conflict, truth'), h('div', {}, h('b', {}, 'Pentacles · earth'), 'money, work, body')),
+      h('p', {}, 'Each suit runs Ace to 10, then Page, Knight, Queen and King.'),
+      h('h4', {}, 'Upright and reversed'),
+      h('p', {}, 'A reversed card isn’t simply “bad”: its energy is blocked, delayed or turned inward.'),
+      h('h4', {}, 'Asking well'),
+      h('ul', {}, h('li', {}, 'Open questions work best: “What should I focus on…”, “How can I…”.'), h('li', {}, 'Tarot doesn’t predict health, death, pregnancy, legal or money outcomes, and it never tells you what you must do.')),
+      h('h4', {}, 'Why BOT Chain?'),
+      h('p', {}, 'The shuffle and the draw happen inside a smart contract, so nobody (not even us) can pick the cards. Your question never goes on-chain, only a salted hash of it.'),
+      h('div', { class: 'row-end', style: 'margin-top:22px' }, h('button', { class: 'pill lime', type: 'button', onclick: () => { closeModal(); go('ask'); } }, 'Begin a reading')));
+  }
+  const closeMenu = () => { document.body.classList.remove('menu-open'); $('burger').setAttribute('aria-expanded', 'false'); };
+
+  // ---------- Home sections ----------
+  function renderHome() {
+    const row = (ids) => {
+      const imgs = ids.map((id) => h('img', { src: cardArt(id), alt: '', loading: 'lazy', width: 108, height: 180 }));
+      return [...imgs, ...imgs.map((i) => i.cloneNode())]; // doubled so the loop is seamless
+    };
+    $('marquee-a').replaceChildren(...row([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]));
+    $('marquee-b').replaceChildren(...row([22, 36, 50, 64, 31, 45, 59, 73, 35, 49, 63, 77, 26, 40, 54, 68, 33, 47, 61, 75]));
+    const suits = [['wands', 'Wands', 'Fire · passion, action', 22], ['cups', 'Cups', 'Water · emotions, relationships', 36], ['swords', 'Swords', 'Air · thoughts, truth', 50], ['pentacles', 'Pentacles', 'Earth · money, work, body', 64]];
+    $('suit-tiles').replaceChildren(...suits.map(([, name, desc, ace]) => h('div', { class: 'tile s3 suit-tile reveal' }, h('img', { src: cardArt(ace), alt: '' }), h('div', {}, h('b', {}, name), h('span', {}, desc)))));
+    $('how-ring').insertAdjacentHTML('afterbegin', ringSvg(68, 120, 9));
+    // A real salted hash of the sample question, so the demo shows the actual format.
+    const demo = ethers.solidityPackedKeccak256(['bytes32', 'string'], [ethers.hexlify(ethers.randomBytes(32)), 'How can I grow at work?']);
+    $('hash-demo').textContent = `${demo.slice(0, 18)}…${demo.slice(-8)}`;
+    if (!('IntersectionObserver' in window)) { document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in')); animateRings($('how')); return; }
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      if (e.target.querySelector('#how-ring')) animateRings(e.target);
+      io.unobserve(e.target);
+    }), { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  }
+
+  async function renderLatest() {
+    const root = $('latest');
+    if (!root) return;
+    $('latest-badge').textContent = PREVIEW ? 'Preview' : 'Live';
+    const total = state.total || 0;
+    if (!total) { root.replaceChildren(h('p', { class: 'cap' }, 'No draws yet. Yours could be the first.')); return; }
+    try {
+      const ids = Array.from({ length: Math.min(4, total) }, (_, i) => total - 1 - i);
+      const readings = (await Promise.all(ids.map((id) => store.get(id)))).filter(Boolean);
+      root.replaceChildren(...readings.map((r) => h('button', { class: 'hist-row', type: 'button', onclick: () => openReading(r.id) },
+        h('div', { class: 'thumbs' }, ...r.cards.map((c) => h('img', { src: cardArt(c.id), alt: '', class: c.reversed ? 'rev' : '' }))),
+        h('div', { class: 'what' }, h('b', {}, r.cards.map((c) => CARDS[c.id].name + (c.reversed ? ' (R)' : '')).join(' · ')), h('span', {}, `${SPREADS[r.spread].label} · ${short(r.seeker)}`)),
+        h('span', { class: 'id' }, `#${r.id}`))));
+    } catch {
+      root.replaceChildren(h('p', { class: 'cap' }, 'Could not reach BOT Chain right now.'));
+    }
+  }
+
+  // ============================================================
+  // Footer
+  // ============================================================
+  async function refreshTotal() {
+    try { state.total = await store.total(); } catch { state.total = null; }
+    renderFooter();
+    renderLatest();
+  }
+  function renderFooter() {
+    const addr = MAINNET.contract;
+    const explorerUrl = addr ? `${MAINNET.explorer}/address/${addr}` : MAINNET.explorer;
+    const total = state.total;
+    // The ring fills towards the next hundred draws.
+    const pct = total === null ? 0 : total % 100 === 0 && total ? 100 : total % 100;
+    const footer = $('footer');
+    footer.replaceChildren(
+      h('div', { class: 'wrap' },
+        h('div', { class: 'bento foot-row' },
+          h('a', { class: 'tile s4 foot-tile built', href: 'https://botchain.ai', target: '_blank', rel: 'noopener', 'aria-label': 'Built on BOT Chain — botchain.ai' },
+            h('img', { src: 'images/bot-chain-black.png', alt: 'BOT Chain', width: 84, height: 84 }),
+            h('p', { class: 'cap' }, 'Built on BOT Chain')),
+          h('div', { class: 'tile s4 foot-tile' },
+            h('h3', { style: 'margin:0' }, 'Every draw, on-chain'),
+            h('div', { class: 'foot-ring' },
+              h('div', { class: 'ring', html: ringSvg(pct, 104, 8) }, h('div', { class: 'center' }, h('div', { class: 'pct' }, total === null ? '—' : total.toLocaleString()), h('div', { class: 'el' }, 'readings'))),
+              h('p', { class: 'cap' }, netKey === 'testnet' ? 'Live count from the testnet contract.' : PREVIEW ? 'Preview count, kept in this browser.' : 'Live count from the mainnet contract.')),
+            h('p', { class: 'cap' }, 'Shuffled and drawn by the contract')),
+          h('div', { class: 'tile s4 foot-tile' },
+            h('h3', { style: 'margin:0' }, 'Contract'),
+            h('div', { class: 'addr', title: addr || '' }, addr ? short(addr) : 'Deploying soon'),
+            h('div', {},
+              h('a', { class: 'pill black', href: explorerUrl, target: '_blank', rel: 'noopener' }, 'View on explorer ↗'),
+              h('p', { class: 'cap', style: 'margin-top:10px' }, 'chain ID 677'))))),
+      h('div', { class: 'foot-word', id: 'foot-word', 'aria-hidden': 'true' }, ...[...'arcanai'].map((ch, i) => h('span', { style: `--i:${i}` }, ch))),
+      h('div', { class: 'fine' }, h('span', {}, '© ArcanAI 2026 · For reflection and fun — not a prediction.'), h('span', {}, 'No tokens · no payments · no personal data')));
+    animateRings(footer);
+    const word = $('foot-word');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { word.classList.add('in'); io.disconnect(); } }, { threshold: 0.2 });
+      io.observe(word);
+    } else word.classList.add('in');
+  }
+
+  // ============================================================
+  // Boot
+  // ============================================================
+  function bindUi() {
+    document.addEventListener('click', (e) => {
+      const goBtn = e.target.closest('[data-go]');
+      if (goBtn) { e.preventDefault(); go(goBtn.dataset.go); }
+      if (e.target.closest('[data-about]')) { closeMenu(); aboutModal(); }
+      if (document.body.classList.contains('menu-open') && !e.target.closest('#menu, #burger')) closeMenu();
+    });
+    $('burger').addEventListener('click', () => {
+      const open = !document.body.classList.contains('menu-open');
+      document.body.classList.toggle('menu-open', open);
+      $('burger').setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeModal(); closeMenu(); } });
+    qInput.addEventListener('input', onQuestion);
+    qInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go('spread'); } });
+    $('ask-next').addEventListener('click', () => go('spread'));
+    $('draw-btn').addEventListener('click', startDraw);
+    window.addEventListener('scroll', () => $('nav').classList.toggle('scrolled', scrollY > 10), { passive: true });
+  }
+
+  async function boot() {
+    bindUi();
+    renderLanding();
+    renderChips();
+    renderWallet();
+    renderFooter();
+    try {
+      CARDS = await (await fetch('cards.json')).json();
+    } catch {
+      toast('Could not load the deck. Check your connection and reload.');
+      return;
+    }
+    renderSpreads();
+    renderHome();
+    initWallet();
+    refreshTotal();
+    if (params.has('reading')) openReading(params.get('reading'));
+    else go('landing', { scroll: false });
+  }
+
+  if (!window.ethers) {
+    document.querySelector('.view[data-view="landing"]').classList.add('active');
+    document.querySelector('.tagline').textContent = 'Could not load ethers.js. Check your connection and reload.';
+    return;
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

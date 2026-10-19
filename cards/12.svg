@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400" role="img" aria-label="The Hanged Man">
+<rect x="1" y="1" width="238" height="398" rx="18" fill="#FFFFFF" stroke="#ECECEA" stroke-width="2"/>
+<rect x="16" y="16" width="208" height="368" rx="10" fill="none" stroke="#111111" stroke-width="1.2"/>
+<rect x="30" y="64" width="180" height="264" rx="90" fill="#F4F8DC"/>
+<g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" fill="#111111">
+<text x="30" y="46" font-size="18" font-weight="500">XII</text>
+<text x="210" y="46" font-size="10" text-anchor="end" fill="#8C8C88" letter-spacing=".6">Major Arcana</text>
+<text x="120" y="360" font-size="15" font-weight="500" text-anchor="middle">The Hanged Man</text>
+</g>
+<g fill="none"><path d="M64 120 H176 M80 120 V292 M160 120 V292" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M120 120 V140 M120 140 L112 168 M120 140 L132 160 L118 176 M120 170 V214 M120 186 L104 204 M120 186 L136 204" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="120" cy="232" r="22" fill="#D9F23F" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="120" cy="232" r="10" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

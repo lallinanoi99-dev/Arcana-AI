@@ -1,0 +1,23 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/ArcanAI.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\n/// @title ArcanAI — tarot cards shuffled and drawn on BOT Chain\n/// @notice Each draw picks 1 or 3 distinct cards from a 78-card deck (0 The Fool … 77 King of Pentacles)\n/// plus an upright/reversed flag per card. The question is never stored, only a hash of it.\n/// Randomness mixes prevrandao, the previous block hash, the sender and a per-wallet nonce:\n/// good enough for a reflection game, not for anything of value.\n/// No tokens, no payments, no admin, no personal data.\ncontract ArcanAI {\n    enum Spread { Daily, ThreeCard }\n\n    struct Reading {\n        address seeker;\n        Spread spread;\n        uint8[3] cards;\n        bool[3] reversed;\n        uint8 count;\n        bytes32 questionHash;\n        uint64 at;\n    }\n\n    uint8 public constant DECK_SIZE = 78;\n\n    Reading[] public readings;\n    mapping(address => uint256[]) private byWallet;\n    mapping(address => uint256) public nonce;\n    mapping(address => uint32) public lastDailyDay;\n    mapping(address => uint32) private streak;\n\n    event Drawn(uint256 indexed id, address indexed seeker, Spread spread, uint8[3] cards, bool[3] reversed);\n\n    error EmptyQuestion();\n    error AlreadyDrewToday();\n    error NotFound();\n\n    /// @notice Shuffle and draw. Daily is one card, once per wallet per UTC day, and builds a streak.\n    function draw(Spread spread, bytes32 questionHash) external returns (uint256 id) {\n        if (questionHash == bytes32(0)) revert EmptyQuestion();\n\n        uint8 count = 3;\n        if (spread == Spread.Daily) {\n            count = 1;\n            uint32 today = uint32(block.timestamp / 1 days);\n            uint32 last = lastDailyDay[msg.sender];\n            if (last == today) revert AlreadyDrewToday();\n            streak[msg.sender] = last + 1 == today ? streak[msg.sender] + 1 : 1;\n            lastDailyDay[msg.sender] = today;\n        }\n\n        bytes32 seed = keccak256(\n            abi.encode(block.prevrandao, blockhash(block.number - 1), msg.sender, nonce[msg.sender]++, readings.length)\n        );\n\n        Reading memory r;\n        r.seeker = msg.sender;\n        r.spread = spread;\n        r.count = count;\n        r.questionHash = questionHash;\n        r.at = uint64(block.timestamp);\n\n        // Pick distinct cards: re-roll on a repeat (rare with at most 3 cards from 78).\n        uint256 salt;\n        for (uint8 i = 0; i < count; i++) {\n            uint256 rnd;\n            uint8 card;\n            bool repeat;\n            do {\n                rnd = uint256(keccak256(abi.encode(seed, salt++)));\n                card = uint8(rnd % DECK_SIZE);\n                repeat = false;\n                for (uint8 j = 0; j < i; j++) if (r.cards[j] == card) repeat = true;\n            } while (repeat);\n            r.cards[i] = card;\n            r.reversed[i] = (rnd >> 128) & 1 == 1;\n        }\n\n        id = readings.length;\n        readings.push(r);\n        byWallet[msg.sender].push(id);\n        emit Drawn(id, msg.sender, spread, r.cards, r.reversed);\n    }\n\n    function getReading(uint256 id) external view returns (Reading memory) {\n        if (id >= readings.length) revert NotFound();\n        return readings[id];\n    }\n\n    function readingsOf(address seeker) external view returns (uint256[] memory) {\n        return byWallet[seeker];\n    }\n\n    /// @notice The live Daily Pull streak: still counts today if yesterday was drawn, 0 once a day is missed.\n    function streakOf(address seeker) external view returns (uint32) {\n        uint32 today = uint32(block.timestamp / 1 days);\n        uint32 last = lastDailyDay[seeker];\n        return last + 1 >= today ? streak[seeker] : 0;\n    }\n\n    function total() external view returns (uint256) {\n        return readings.length;\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode.object"
+        ]
+      }
+    }
+  }
+}

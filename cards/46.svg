@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400" role="img" aria-label="Page of Cups">
+<rect x="1" y="1" width="238" height="398" rx="18" fill="#FFFFFF" stroke="#ECECEA" stroke-width="2"/>
+<rect x="16" y="16" width="208" height="368" rx="10" fill="none" stroke="#111111" stroke-width="1.2"/>
+<rect x="30" y="64" width="180" height="264" rx="90" fill="#E8F1F7"/>
+<g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" fill="#111111">
+<text x="30" y="46" font-size="18" font-weight="500">P</text>
+<text x="210" y="46" font-size="10" text-anchor="end" fill="#8C8C88" letter-spacing=".6">Cups · water</text>
+<text x="120" y="360" font-size="15" font-weight="500" text-anchor="middle">Page of Cups</text>
+</g>
+<g fill="none"><path d="M120 112 C140 124 140 150 120 166 C112 150 112 128 120 112 Z M120 166 V178" fill="#D9F23F" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(120 236) scale(2)"><path d="M-13 -18 H13 Q13 2 0 4 Q-13 2 -13 -18 Z" fill="#fff" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M0 4 V16 M-9 18 H9" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400" role="img" aria-label="The Magician">
+<rect x="1" y="1" width="238" height="398" rx="18" fill="#FFFFFF" stroke="#ECECEA" stroke-width="2"/>
+<rect x="16" y="16" width="208" height="368" rx="10" fill="none" stroke="#111111" stroke-width="1.2"/>
+<rect x="30" y="64" width="180" height="264" rx="90" fill="#F4F8DC"/>
+<g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" fill="#111111">
+<text x="30" y="46" font-size="18" font-weight="500">I</text>
+<text x="210" y="46" font-size="10" text-anchor="end" fill="#8C8C88" letter-spacing=".6">Major Arcana</text>
+<text x="120" y="360" font-size="15" font-weight="500" text-anchor="middle">The Magician</text>
+</g>
+<g fill="none"><path d="M120 128 C110 114 88 114 88 128 C88 142 110 142 120 128 C130 114 152 114 152 128 C152 142 130 142 120 128 Z" fill="#D9F23F" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M120 156 V250" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="120" cy="156" r="5" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M66 260 H174 M76 260 V292 M164 260 V292" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="86" cy="250" r="5" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M146 246 h12 l-2 8 h-8 z" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

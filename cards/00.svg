@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400" role="img" aria-label="The Fool">
+<rect x="1" y="1" width="238" height="398" rx="18" fill="#FFFFFF" stroke="#ECECEA" stroke-width="2"/>
+<rect x="16" y="16" width="208" height="368" rx="10" fill="none" stroke="#111111" stroke-width="1.2"/>
+<rect x="30" y="64" width="180" height="264" rx="90" fill="#F4F8DC"/>
+<g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" fill="#111111">
+<text x="30" y="46" font-size="18" font-weight="500">0</text>
+<text x="210" y="46" font-size="10" text-anchor="end" fill="#8C8C88" letter-spacing=".6">Major Arcana</text>
+<text x="120" y="360" font-size="15" font-weight="500" text-anchor="middle">The Fool</text>
+</g>
+<g fill="none"><circle cx="168" cy="122" r="16" fill="#D9F23F" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M48 268 H138 L150 296" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="104" cy="168" r="10" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M104 178 V220 M104 220 L92 262 M104 220 L120 258 M104 192 L84 206 M104 192 L134 172" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="138" cy="166" r="7" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

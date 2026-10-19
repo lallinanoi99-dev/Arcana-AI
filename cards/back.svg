@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400" role="img" aria-label="Card back">
+<rect width="240" height="400" rx="18" fill="#0E0E0E"/>
+<rect x="16" y="16" width="208" height="368" rx="10" fill="none" stroke="#2A2A2A" stroke-width="1.2"/>
+<g fill="none" stroke="#D9F23F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="120" cy="200" r="26"/><polygon points="120.0,182.0 124.5,195.5 138.0,200.0 124.5,204.5 120.0,218.0 115.5,204.5 102.0,200.0 115.5,195.5" fill="#D9F23F"/><path d="M120 158 V146 M120 242 V254 M78 200 H66 M162 200 H174"/>
+</g>
+</svg>

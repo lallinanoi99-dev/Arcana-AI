@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400" role="img" aria-label="Judgement">
+<rect x="1" y="1" width="238" height="398" rx="18" fill="#FFFFFF" stroke="#ECECEA" stroke-width="2"/>
+<rect x="16" y="16" width="208" height="368" rx="10" fill="none" stroke="#111111" stroke-width="1.2"/>
+<rect x="30" y="64" width="180" height="264" rx="90" fill="#F4F8DC"/>
+<g font-family="Inter, 'Helvetica Neue', Arial, sans-serif" fill="#111111">
+<text x="30" y="46" font-size="18" font-weight="500">XX</text>
+<text x="210" y="46" font-size="10" text-anchor="end" fill="#8C8C88" letter-spacing=".6">Major Arcana</text>
+<text x="120" y="360" font-size="15" font-weight="500" text-anchor="middle">Judgement</text>
+</g>
+<g fill="none"><path d="M70 230 L152 148 L172 140 L164 160 L82 242 Z" fill="#D9F23F" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M174 120 L190 104 M184 132 L204 128 M162 112 L166 92" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M60 290 Q90 268 120 290 Q150 268 180 290" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M152 148 L164 160" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>
